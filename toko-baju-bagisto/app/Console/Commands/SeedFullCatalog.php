@@ -17,6 +17,45 @@ class SeedFullCatalog extends Command
 
     public function handle()
     {
+        $this->info('Configuring currencies and exchange rates...');
+        
+        $idr = \Webkul\Core\Models\Currency::updateOrCreate(
+            ['code' => 'IDR'],
+            [
+                'name'              => 'Indonesian Rupiah',
+                'symbol'            => 'Rp',
+                'decimal'           => 0,
+                'currency_position' => 'left_with_space'
+            ]
+        );
+        
+        $usd = \Webkul\Core\Models\Currency::updateOrCreate(
+            ['code' => 'USD'],
+            [
+                'name'    => 'United States Dollar',
+                'symbol'  => '$',
+                'decimal' => 2
+            ]
+        );
+        
+        $channel = \Webkul\Core\Models\Channel::first();
+        if ($channel) {
+            $channel->update([
+                'base_currency_id' => $idr->id,
+            ]);
+            $channel->currencies()->syncWithoutDetaching([$idr->id, $usd->id]);
+        }
+        
+        \Illuminate\Support\Facades\DB::table('currency_exchange_rates')->updateOrInsert(
+            ['target_currency' => $idr->id],
+            ['rate' => 1.000000000000]
+        );
+        
+        \Illuminate\Support\Facades\DB::table('currency_exchange_rates')->updateOrInsert(
+            ['target_currency' => $usd->id],
+            ['rate' => 0.000062500000]
+        );
+
         $productRepository = app(ProductRepository::class);
 
         // Clear existing products first

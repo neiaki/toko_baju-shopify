@@ -53,7 +53,7 @@ class SeedFullCatalog extends Command
         
         \Illuminate\Support\Facades\DB::table('currency_exchange_rates')->updateOrInsert(
             ['target_currency' => $usd->id],
-            ['rate' => 0.000062500000]
+            ['rate' => 1 / 17500]
         );
 
         $productRepository = app(ProductRepository::class);
@@ -325,6 +325,8 @@ class SeedFullCatalog extends Command
                     // Bagisto uses special_price for discounted items
                     $updateData['special_price'] = $pData['price'];
                     $updateData['price'] = $pData['compare_price'];
+                    $updateData['special_price_from'] = now()->format('Y-m-d');
+                    $updateData['special_price_to'] = now()->addYear()->format('Y-m-d');
                 }
 
                 $product = $productRepository->update($updateData, $product->id);

@@ -287,6 +287,10 @@ class ProductRepository extends Repository
                     ->where('product_channels.channel_id', explode(',', $params['channel_id']));
             }
 
+            if (! empty($params['on_sale'])) {
+                $qb->whereRaw('product_price_indices.min_price < product_price_indices.regular_min_price');
+            }
+
             if (! empty($params['type'])) {
                 $qb->where('products.type', $params['type']);
 

@@ -44,6 +44,12 @@ class ProductCardResource extends JsonResource
     {
         $productTypeInstance = $this->getTypeInstance();
 
+        $priceIndex = $productTypeInstance->getPriceIndex();
+        $discountPercent = 0;
+        if ($priceIndex && $priceIndex->regular_min_price > 0 && $priceIndex->min_price < $priceIndex->regular_min_price) {
+            $discountPercent = (int) round((($priceIndex->regular_min_price - $priceIndex->min_price) / $priceIndex->regular_min_price) * 100);
+        }
+
         return [
             'id' => $this->id,
             'sku' => $this->sku,
@@ -53,6 +59,7 @@ class ProductCardResource extends JsonResource
             'is_new' => (bool) $this->new,
             'is_featured' => (bool) $this->featured,
             'on_sale' => (bool) $productTypeInstance->haveDiscount(),
+            'discount_percent' => $discountPercent,
             'is_saleable' => (bool) $productTypeInstance->isSaleable(),
             'is_wishlist' => (bool) auth()->guard()->user()?->wishlist_items
                 ->where('channel_id', core()->getCurrentChannel()->id)

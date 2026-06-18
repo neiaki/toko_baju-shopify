@@ -21,7 +21,7 @@ export default function AccountPage() {
           </p>
         </div>
 
-        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+        <form className="space-y-4" onSubmit={(e) => e.preventDefault()} suppressHydrationWarning>
           {!isLogin && (
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -34,11 +34,11 @@ export default function AccountPage() {
           )}
           
           <div className="space-y-2">
-            <Input type="email" placeholder="Email" className="rounded-none bg-background border-border h-12" />
+            <Input suppressHydrationWarning type="email" placeholder="Email" className="rounded-none bg-background border-border h-12" />
           </div>
           
           <div className="space-y-2">
-            <Input type="password" placeholder="Password" className="rounded-none bg-background border-border h-12" />
+            <Input suppressHydrationWarning type="password" placeholder="Password" className="rounded-none bg-background border-border h-12" />
           </div>
 
           <Button className="w-full bg-brand-black hover:bg-brand-black/90 text-white dark:bg-white dark:text-black dark:hover:bg-white/90 rounded-none h-12 mt-6 font-bold uppercase tracking-widest text-sm">

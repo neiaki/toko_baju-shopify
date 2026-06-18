@@ -1,0 +1,32 @@
+Handle,Title,Body (HTML),Vendor,Type,Tags,Published,Option1 Name,Option1 Value,Variant Inventory Tracker,Variant Inventory Qty,Variant Inventory Policy,Variant Fulfillment Service,Variant Price,Variant Compare At Price,Variant Requires Shipping,Variant Taxable,Image Src
+kaos-polos-hitam,Kaos Polos Hitam,Kaos katun premium yang nyaman dipakai sehari-hari.,Toko Fashion,Kaos,new-arrival,TRUE,Ukuran,M,shopify,100,deny,manual,120000,,TRUE,TRUE,https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80
+kaos-polos-hitam,,,,,,,Ukuran,L,shopify,100,deny,manual,120000,,TRUE,TRUE,
+kaos-polos-hitam,,,,,,,Ukuran,XL,shopify,50,deny,manual,120000,,TRUE,TRUE,
+kaos-polos-putih,Kaos Polos Putih,Kaos basic putih bersih bahan katun bambu.,Toko Fashion,Kaos,sale,TRUE,Ukuran,M,shopify,80,deny,manual,110000,150000,TRUE,TRUE,https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&q=80
+kaos-polos-putih,,,,,,,Ukuran,L,shopify,80,deny,manual,110000,150000,TRUE,TRUE,
+kaos-polos-putih,,,,,,,Ukuran,XL,shopify,30,deny,manual,110000,150000,TRUE,TRUE,
+kaos-grafis-urban,Kaos Grafis Urban,Kaos streetwear dengan sablon plastisol tahan lama.,Toko Fashion,Kaos,new-arrival,TRUE,Ukuran,L,shopify,60,deny,manual,145000,,TRUE,TRUE,https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&q=80
+kaos-grafis-urban,,,,,,,Ukuran,XL,shopify,40,deny,manual,145000,,TRUE,TRUE,
+kaos-lengan-panjang,Kaos Lengan Panjang,Cocok untuk udara dingin atau gaya kasual.,Toko Fashion,Kaos,,TRUE,Ukuran,M,shopify,50,deny,manual,160000,,TRUE,TRUE,https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=800&q=80
+kaos-lengan-panjang,,,,,,,Ukuran,L,shopify,50,deny,manual,160000,,TRUE,TRUE,
+kemeja-flanel-kasual,Kemeja Flanel Kasual,Kemeja flanel kasual yang cocok untuk gaya urban.,Toko Fashion,Kemeja,new-arrival,TRUE,Ukuran,M,shopify,50,deny,manual,250000,,TRUE,TRUE,https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&q=80
+kemeja-flanel-kasual,,,,,,,Ukuran,L,shopify,50,deny,manual,250000,,TRUE,TRUE,
+kemeja-oxford-putih,Kemeja Oxford Putih,Kemeja formal casual bahan oxford tebal.,Toko Fashion,Kemeja,sale,TRUE,Ukuran,S,shopify,20,deny,manual,220000,299000,TRUE,TRUE,https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800&q=80
+kemeja-oxford-putih,,,,,,,Ukuran,M,shopify,30,deny,manual,220000,299000,TRUE,TRUE,
+kemeja-oxford-putih,,,,,,,Ukuran,L,shopify,30,deny,manual,220000,299000,TRUE,TRUE,
+kemeja-pantai-motif,Kemeja Pantai Motif,Kemeja rayon adem dengan motif liburan musim panas.,Toko Fashion,Kemeja,sale,TRUE,Ukuran,L,shopify,15,deny,manual,199000,250000,TRUE,TRUE,https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=800&q=80
+kemeja-pantai-motif,,,,,,,Ukuran,XL,shopify,10,deny,manual,199000,250000,TRUE,TRUE,
+celana-jeans-slim,Celana Jeans Slim Fit,Jeans denim stretch yang pas dan sangat nyaman.,Toko Fashion,Celana,sale,TRUE,Ukuran,30,shopify,40,deny,manual,350000,450000,TRUE,TRUE,https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&q=80
+celana-jeans-slim,,,,,,,Ukuran,32,shopify,40,deny,manual,350000,450000,TRUE,TRUE,
+celana-jeans-slim,,,,,,,Ukuran,34,shopify,40,deny,manual,350000,450000,TRUE,TRUE,
+celana-cargo-army,Celana Cargo Army,Celana cargo taktis banyak saku dengan material ripstop.,Toko Fashion,Celana,new-arrival,TRUE,Ukuran,32,shopify,25,deny,manual,380000,,TRUE,TRUE,https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=800&q=80
+celana-cargo-army,,,,,,,Ukuran,34,shopify,20,deny,manual,380000,,TRUE,TRUE,
+celana-chino-cream,Celana Chino Cream,Celana chino potongan lurus yang rapi.,Toko Fashion,Celana,,TRUE,Ukuran,30,shopify,50,deny,manual,280000,,TRUE,TRUE,https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&q=80
+celana-chino-cream,,,,,,,Ukuran,32,shopify,45,deny,manual,280000,,TRUE,TRUE,
+celana-jogger-sweatpants,Celana Jogger,Sweatpants untuk olahraga atau bersantai di rumah.,Toko Fashion,Celana,sale,TRUE,Ukuran,M,shopify,35,deny,manual,180000,250000,TRUE,TRUE,https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=800&q=80
+celana-jogger-sweatpants,,,,,,,Ukuran,L,shopify,35,deny,manual,180000,250000,TRUE,TRUE,
+hoodie-oversize-abu,Hoodie Oversize Abu,Hoodie tebal hangat dengan potongan oversize.,Toko Fashion,Aksesoris,sale,TRUE,Ukuran,All Size,shopify,25,deny,manual,299000,399000,TRUE,TRUE,https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800&q=80
+jaket-denim-hitam,Jaket Denim Hitam,Jaket denim berkelas potongan pas badan.,Toko Fashion,Aksesoris,new-arrival,TRUE,Ukuran,L,shopify,15,deny,manual,450000,,TRUE,TRUE,https://images.unsplash.com/photo-1578587018452-892bacefd3f2?w=800&q=80
+jaket-denim-hitam,,,,,,,Ukuran,XL,shopify,10,deny,manual,450000,,TRUE,TRUE,
+topi-baseball-classic,Topi Baseball Classic,Topi kasual kanvas untuk gaya jalanan.,Toko Fashion,Aksesoris,,TRUE,Ukuran,All Size,shopify,100,deny,manual,85000,,TRUE,TRUE,https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800&q=80
+tas-selempang-canvas,Tas Selempang Canvas,Tas bahu ringan multifungsi.,Toko Fashion,Aksesoris,new-arrival,TRUE,Ukuran,All Size,shopify,60,deny,manual,150000,,TRUE,TRUE,https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=800&q=80

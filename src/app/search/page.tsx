@@ -1,15 +1,11 @@
-"use client";
-
-import { useSearchParams } from "next/navigation";
-import { searchProducts } from "@/lib/data/products";
+import { searchProducts } from "@/lib/shopify/products";
 import { ProductCard } from "@/components/shared/product-card";
-import { Suspense } from "react";
 
-function SearchResults() {
-  const searchParams = useSearchParams();
-  const query = searchParams.get("q") || "";
+export default async function SearchPage(props: { searchParams: Promise<{ q: string }> }) {
+  const searchParams = await props.searchParams;
+  const query = searchParams.q || "";
   
-  const results = query ? searchProducts(query) : [];
+  const results = query ? await searchProducts(query) : [];
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-20 min-h-[60vh]">
@@ -53,13 +49,5 @@ function SearchResults() {
         )
       )}
     </div>
-  );
-}
-
-export default function SearchPage() {
-  return (
-    <Suspense fallback={<div className="container mx-auto px-4 py-20 text-center">Memuat...</div>}>
-      <SearchResults />
-    </Suspense>
   );
 }

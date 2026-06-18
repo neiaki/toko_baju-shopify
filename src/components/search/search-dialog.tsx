@@ -11,15 +11,36 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { searchProducts } from "@/lib/data/products";
+import { Product } from "@/lib/types";
+import { searchProducts } from "@/lib/shopify/products";
 import { ProductCard } from "@/components/shared/product-card";
 
 export function SearchDialog() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [results, setResults] = useState<Product[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const router = useRouter();
 
-  const results = query.length > 1 ? searchProducts(query).slice(0, 4) : [];
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (query.length > 1) {
+        setIsSearching(true);
+        try {
+          const res = await searchProducts(query);
+          setResults(res.slice(0, 4));
+        } catch (error) {
+          console.error("Search failed:", error);
+        } finally {
+          setIsSearching(false);
+        }
+      } else {
+        setResults([]);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [query]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

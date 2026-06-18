@@ -31,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" className={`${inter.variable} ${bebasNeue.variable} dark`} suppressHydrationWarning>
-      <body className="font-body antialiased min-h-screen flex flex-col">
+      <body className="font-body antialiased min-h-screen flex flex-col" suppressHydrationWarning>
         <CartProvider>
           <AnnouncementBar />
           <Navbar />

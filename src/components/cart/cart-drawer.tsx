@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ShoppingBag, X, Minus, Plus, Tag } from "lucide-react";
 import { useCart } from "@/lib/context/cart-context";
-import { formatPrice } from "@/lib/data/products";
+import { formatPrice } from "@/lib/utils";
 import {
   Sheet,
   SheetContent,
@@ -32,7 +32,11 @@ export function CartDrawer() {
   };
 
   const handleCheckout = () => {
-    alert("Ini adalah demo frontend. Checkout tidak tersedia.");
+    if (cart.checkoutUrl) {
+      window.location.href = cart.checkoutUrl;
+    } else {
+      alert("Checkout URL tidak tersedia.");
+    }
   };
 
   return (

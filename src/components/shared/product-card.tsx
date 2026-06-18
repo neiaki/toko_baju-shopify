@@ -3,8 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Product } from "@/lib/types";
+import { Badge } from "@/components/ui/badge";
+import { formatPrice } from "@/lib/utils";
 import { cn } from "@/lib/utils";
-import { formatPrice } from "@/lib/data/products";
 
 interface ProductCardProps {
   product: Product;
@@ -42,25 +43,31 @@ export function ProductCard({ product, className }: ProductCardProps) {
         </div>
 
         {/* Images */}
-        <div className="relative w-full h-full">
-          <Image
-            src={product.images[0]?.src || ""}
-            alt={product.images[0]?.alt || product.title}
-            fill
-            sizes="(max-width: 768px) 50vw, 25vw"
-            className={cn(
-              "object-cover transition-opacity duration-500",
-              product.images.length > 1 ? "group-hover:opacity-0" : ""
-            )}
-          />
-          {product.images.length > 1 && (
-            <Image
-              src={product.images[1]?.src || ""}
-              alt={product.images[1]?.alt || product.title}
-              fill
-              sizes="(max-width: 768px) 50vw, 25vw"
-              className="object-cover absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-hover:scale-105 transform"
-            />
+        <div className="relative w-full h-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center">
+          {product.images[0]?.src ? (
+            <>
+              <Image
+                src={product.images[0].src}
+                alt={product.images[0].alt || product.title}
+                fill
+                sizes="(max-width: 768px) 50vw, 25vw"
+                className={cn(
+                  "object-cover transition-opacity duration-500",
+                  product.images.length > 1 ? "group-hover:opacity-0" : ""
+                )}
+              />
+              {product.images.length > 1 && product.images[1]?.src && (
+                <Image
+                  src={product.images[1].src}
+                  alt={product.images[1].alt || product.title}
+                  fill
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                  className="object-cover absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-hover:scale-105 transform"
+                />
+              )}
+            </>
+          ) : (
+            <span className="text-muted-foreground text-xs uppercase tracking-widest font-medium">No Image</span>
           )}
         </div>
 

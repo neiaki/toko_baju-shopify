@@ -5,7 +5,7 @@ import { Product } from "@/lib/types";
 import { VariantSelector } from "@/components/product/variant-selector";
 import { SizeGuide } from "@/components/product/size-guide";
 import { useCart } from "@/lib/context/cart-context";
-import { formatPrice } from "@/lib/data/products";
+import { formatPrice } from "@/lib/utils";
 
 interface ProductFormProps {
   product: Product;
@@ -35,20 +35,18 @@ export function ProductForm({ product }: ProductFormProps) {
     )
   ) || product.variants[0];
 
-  const handleAddToCart = () => {
+  const [isAdding, setIsAdding] = useState(false);
+
+  const handleAddToCart = async () => {
     if (selectedVariant && selectedVariant.availableForSale) {
-      addItem({
-        id: `${product.id}-${selectedVariant.id}`,
-        productId: product.id,
-        variantId: selectedVariant.id,
-        title: product.title,
-        variantTitle: selectedVariant.title,
-        price: selectedVariant.price,
-        compareAtPrice: selectedVariant.compareAtPrice,
-        quantity: 1,
-        image: product.images[0]?.src || "",
-        handle: product.handle,
-      });
+      setIsAdding(true);
+      try {
+        await addItem(selectedVariant.id, 1);
+      } catch (error) {
+        console.error("Failed to add to cart", error);
+      } finally {
+        setIsAdding(false);
+      }
     }
   };
 
@@ -92,10 +90,10 @@ export function ProductForm({ product }: ProductFormProps) {
 
       <button
         onClick={handleAddToCart}
-        disabled={!isAvailable}
+        disabled={!isAvailable || isAdding}
         className="w-full bg-brand-black hover:bg-brand-black/90 text-white dark:bg-white dark:text-black dark:hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed h-14 font-bold uppercase tracking-widest text-sm transition-colors"
       >
-        {isAvailable ? "Tambah ke Keranjang" : "Sold Out"}
+        {isAdding ? "Menambahkan..." : isAvailable ? "Tambah ke Keranjang" : "Sold Out"}
       </button>
 
       <div className="mt-8 prose prose-sm dark:prose-invert text-muted-foreground" dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />

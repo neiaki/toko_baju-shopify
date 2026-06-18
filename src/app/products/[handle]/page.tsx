@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getProductByHandle, getProductsByType } from "@/lib/data/products";
+import { getProductByHandle, getProductsByType } from "@/lib/shopify/products";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { ProductForm } from "@/components/product/product-form";
 import { ProductTabs } from "@/components/product/product-tabs";
@@ -8,14 +8,15 @@ import { SectionHeader } from "@/components/shared/section-header";
 
 export default async function ProductPage(props: { params: Promise<{ handle: string }> }) {
   const params = await props.params;
-  const product = getProductByHandle(params.handle);
+  const product = await getProductByHandle(params.handle);
 
   if (!product) {
     notFound();
   }
 
   // Get related products (same type, excluding current)
-  const relatedProducts = getProductsByType(product.productType)
+  const allRelated = await getProductsByType(product.productType);
+  const relatedProducts = allRelated
     .filter(p => p.id !== product.id)
     .slice(0, 4);
 

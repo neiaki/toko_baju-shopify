@@ -1,12 +1,13 @@
 import { notFound } from "next/navigation";
-import { getCollectionByHandle, getProductsForCollection } from "@/lib/data/collections";
+import { getCollectionByHandle, getProductsForCollection } from "@/lib/shopify/collections";
+import { getProducts } from "@/lib/shopify/products";
 import { ProductCard } from "@/components/shared/product-card";
 import { FilterSidebar } from "@/components/collection/filter-sidebar";
 import { SortSelect } from "@/components/collection/sort-select";
 
 export default async function CollectionPage(props: { params: Promise<{ handle: string }> }) {
   const params = await props.params;
-  const collection = getCollectionByHandle(params.handle);
+  const collection = await getCollectionByHandle(params.handle);
   
   if (!collection && params.handle !== "all") {
     notFound();
@@ -14,11 +15,8 @@ export default async function CollectionPage(props: { params: Promise<{ handle: 
 
   const title = collection ? collection.title : "Semua Koleksi";
   const description = collection ? collection.description : "Lihat semua koleksi pakaian streetwear urban terbaik dari Toko Fashion.";
-  const products = collection ? getProductsForCollection(params.handle) : getProductsForCollection("all"); // Mock 'all' by getting all or default. In mock data, all collections combined or just import products.
   
-  // Since we don't have a real DB, just fetch products using a mock
-  // If handle is 'all', we should show all products, but for this demo let's use a workaround or assume getProductsForCollection handles it
-  const displayProducts = params.handle === "all" ? (await import("@/lib/data/products")).products : products;
+  const displayProducts = params.handle === "all" ? await getProducts() : await getProductsForCollection(params.handle);
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">

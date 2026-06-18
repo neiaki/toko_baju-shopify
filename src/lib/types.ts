@@ -70,4 +70,6 @@ export interface Cart {
   subtotal: number;
   discountCode: string | null;
   discountAmount: number;
+  cartId?: string;
+  checkoutUrl?: string;
 }

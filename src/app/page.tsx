@@ -3,11 +3,11 @@ import { CategoryGrid } from "@/components/home/category-grid";
 import { PromoBanner } from "@/components/home/promo-banner";
 import { SectionHeader } from "@/components/shared/section-header";
 import { ProductCard } from "@/components/shared/product-card";
-import { getProductsByTag } from "@/lib/data/products";
+import { getProductsByTag } from "@/lib/shopify/products";
 
-export default function Home() {
-  const newArrivals = getProductsByTag("new-arrival").slice(0, 8);
-  const bestSellers = getProductsByTag("best-seller").slice(0, 4);
+export default async function Home() {
+  const newArrivals = (await getProductsByTag("new-arrival")).slice(0, 8);
+  const bestSellers = (await getProductsByTag("best-seller")).slice(0, 4);
 
   return (
     <div className="flex flex-col gap-0 w-full overflow-hidden">

@@ -54,10 +54,10 @@ export function Footer() {
             
             <div className="pt-4">
               <h4 className="font-bold text-white uppercase tracking-wider text-sm mb-3">Berlangganan</h4>
-              <div className="flex gap-2">
-                <Input type="email" placeholder="Email Anda" className="bg-gray-900 border-gray-800 text-white rounded-none focus-visible:ring-gray-700" />
-                <Button className="rounded-none bg-white text-black hover:bg-gray-200">Daftar</Button>
-              </div>
+              <form className="flex gap-2" suppressHydrationWarning>
+                <Input suppressHydrationWarning type="email" placeholder="Email Anda" className="bg-gray-900 border-gray-800 text-white rounded-none focus-visible:ring-gray-700" />
+                <Button type="submit" className="rounded-none bg-white text-black hover:bg-gray-200">Daftar</Button>
+              </form>
             </div>
           </div>
         </div>

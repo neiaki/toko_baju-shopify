@@ -547,10 +547,13 @@
                         const stored = localStorage.getItem('categories');
 
                         if (stored) {
-                            this.categories = JSON.parse(stored);
-                            this.isLoading = false;
+                            const parsed = JSON.parse(stored);
+                            if (parsed && parsed.length > 0) {
+                                this.categories = parsed;
+                                this.isLoading = false;
 
-                            return;
+                                return;
+                            }
                         }
 
                     } catch (e) {}

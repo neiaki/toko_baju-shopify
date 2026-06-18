@@ -519,7 +519,6 @@
                             if (parsed && parsed.length > 0) {
                                 this.categories = parsed;
                                 this.isLoading = false;
-                                return;
                             }
                         }
 

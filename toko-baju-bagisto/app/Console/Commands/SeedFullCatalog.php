@@ -56,6 +56,53 @@ class SeedFullCatalog extends Command
             ['rate' => 1 / 17500]
         );
 
+        $categoriesData = [
+            1 => [
+                'name' => 'Root',
+                'slug' => 'root',
+                'description' => 'Root Category',
+            ],
+            2 => [
+                'name' => 'Kaos',
+                'slug' => 'kaos',
+                'description' => 'Koleksi kaos polos dan grafis streetwear',
+            ],
+            3 => [
+                'name' => 'Kemeja',
+                'slug' => 'kemeja',
+                'description' => 'Koleksi kemeja kasual dan formal',
+            ],
+            4 => [
+                'name' => 'Celana',
+                'slug' => 'celana',
+                'description' => 'Koleksi celana jeans, cargo, dan chino',
+            ],
+            5 => [
+                'name' => 'Hoodie & Sweater',
+                'slug' => 'hoodie-sweater',
+                'description' => 'Koleksi hoodie dan sweater',
+            ],
+            6 => [
+                'name' => 'Aksesoris',
+                'slug' => 'aksesoris',
+                'description' => 'Koleksi aksesoris fashion',
+            ],
+        ];
+
+        foreach ($categoriesData as $catId => $data) {
+            foreach (['en', 'id'] as $locale) {
+                \Illuminate\Support\Facades\DB::table('category_translations')->updateOrInsert(
+                    ['category_id' => $catId, 'locale' => $locale],
+                    [
+                        'name' => $data['name'],
+                        'slug' => $data['slug'],
+                        'description' => $data['description'],
+                        'url_path' => $data['slug'],
+                    ]
+                );
+            }
+        }
+
         $productRepository = app(ProductRepository::class);
 
         // Clear existing products first
@@ -329,6 +376,12 @@ class SeedFullCatalog extends Command
                     $updateData['special_price_to'] = now()->addYear()->format('Y-m-d');
                 }
 
+                // Update for English locale
+                $updateData['locale'] = 'en';
+                $product = $productRepository->update($updateData, $product->id);
+
+                // Update for Indonesian locale
+                $updateData['locale'] = 'id';
                 $product = $productRepository->update($updateData, $product->id);
 
                 // Download and save image if exists

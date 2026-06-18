@@ -102,8 +102,8 @@
                         "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
                         "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=400&q=80",
                         "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&q=80",
-                        "https://images.unsplash.com/photo-1509631179647-0c37cb110060?w=400&q=80",
-                        "https://images.unsplash.com/photo-1550614000-4b95d4ed7982?w=400&q=80"
+                        "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=400&q=80",
+                        "https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?w=400&q=80"
                     ];
                 @endphp
                 @foreach($igPhotos as $src)

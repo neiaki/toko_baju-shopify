@@ -1093,7 +1093,7 @@ return [
                 'continue-to-checkout' => 'Lanjut ke Pembayaran',
                 'empty-cart' => 'Keranjang Anda kosong',
                 'excl-tax' => 'Tidak termasuk pajak:',
-                'offer-on-orders' => 'Dapatkan Diskon Hingga 30% untuk pesanan pertama Anda',
+                'offer-on-orders' => 'Dapatkan Diskon Hingga 40% untuk pesanan pertama Anda',
                 'remove' => 'Hapus',
                 'see-details' => 'Lihat Detail',
                 'shopping-cart' => 'Keranjang Belanja',

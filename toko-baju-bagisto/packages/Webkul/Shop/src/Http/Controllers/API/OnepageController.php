@@ -29,9 +29,15 @@ class OnepageController extends APIController
     /**
      * Return cart summary.
      */
-    public function summary(): JsonResource
+    public function summary(): \Illuminate\Http\Resources\Json\JsonResource|\Illuminate\Http\JsonResponse
     {
         $cart = Cart::getCart();
+
+        if (! $cart) {
+            return response()->json([
+                'message' => trans('shop::app.checkout.cart.index.empty-product'),
+            ], 400);
+        }
 
         return new CartResource($cart);
     }

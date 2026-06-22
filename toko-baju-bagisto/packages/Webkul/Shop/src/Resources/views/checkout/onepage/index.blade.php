@@ -176,7 +176,9 @@
 
                                 this.scrollToCurrentStep();
                             })
-                            .catch(error => {});
+                            .catch(error => {
+                                window.location.href = "{{ route('shop.checkout.cart.index') }}";
+                            });
                     },
 
                     stepForward(step) {

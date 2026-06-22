@@ -56,6 +56,79 @@ class SeedFullCatalog extends Command
             ['rate' => 1 / 17500]
         );
 
+        // =====================================================
+        // PAYMENT & SHIPPING CONFIGURATION
+        // =====================================================
+        $this->info('Configuring payment methods and shipping carriers...');
+
+        $channelCode = $channel?->code ?? 'default';
+
+        $coreConfigs = [
+            // ===== PAYMENT METHODS =====
+
+            // Cash on Delivery (COD) — AKTIF
+            'sales.payment_methods.cashondelivery.active'       => '1',
+            'sales.payment_methods.cashondelivery.title'        => 'Bayar di Tempat (COD)',
+            'sales.payment_methods.cashondelivery.description'  => 'Bayar langsung saat barang diterima oleh kurir.',
+            'sales.payment_methods.cashondelivery.instructions' => 'Siapkan uang pas saat kurir tiba. Pesanan akan diproses segera setelah checkout.',
+            'sales.payment_methods.cashondelivery.sort'         => '1',
+
+            // Money Transfer (Transfer Bank) — AKTIF
+            'sales.payment_methods.moneytransfer.active'          => '1',
+            'sales.payment_methods.moneytransfer.title'           => 'Transfer Bank',
+            'sales.payment_methods.moneytransfer.description'     => 'Bayar via transfer bank BCA, Mandiri, BNI, atau BRI.',
+            'sales.payment_methods.moneytransfer.mailing_address' => "Silakan transfer ke salah satu rekening berikut:\n\nBank BCA\nNo. Rek: 1234567890\nA/N: Toko Fashion\n\nBank Mandiri\nNo. Rek: 0987654321\nA/N: Toko Fashion\n\nKonfirmasi pembayaran akan diverifikasi dalam 1x24 jam.",
+            'sales.payment_methods.moneytransfer.sort'            => '2',
+
+            // Stripe — NON-AKTIF
+            'sales.payment_methods.stripe.active' => '0',
+
+            // Razorpay — NON-AKTIF
+            'sales.payment_methods.razorpay.active' => '0',
+
+            // PayU — NON-AKTIF
+            'sales.payment_methods.payu.active' => '0',
+
+            // PhonePe — NON-AKTIF
+            'sales.payment_methods.phonepe.active' => '0',
+
+            // PayPal Smart Button — NON-AKTIF
+            'sales.payment_methods.paypal_smart_button.active' => '0',
+
+            // PayPal Standard — NON-AKTIF
+            'sales.payment_methods.paypal_standard.active' => '0',
+
+            // ===== SHIPPING CARRIERS =====
+
+            // Flat Rate — AKTIF (Rp 15.000 per order)
+            'sales.carriers.flatrate.active'       => '1',
+            'sales.carriers.flatrate.title'        => 'Pengiriman Reguler',
+            'sales.carriers.flatrate.description'  => 'Estimasi 2-4 hari kerja ke seluruh Indonesia.',
+            'sales.carriers.flatrate.default_rate' => '15000',
+            'sales.carriers.flatrate.type'         => 'per_order',
+
+            // Free Shipping — AKTIF
+            'sales.carriers.free.active'      => '1',
+            'sales.carriers.free.title'       => 'Gratis Ongkir',
+            'sales.carriers.free.description' => 'Gratis ongkos kirim untuk pembelian tertentu.',
+        ];
+
+        foreach ($coreConfigs as $code => $value) {
+            \Illuminate\Support\Facades\DB::table('core_config')->updateOrInsert(
+                [
+                    'code'         => $code,
+                    'channel_code' => $channelCode,
+                ],
+                [
+                    'value'       => $value,
+                    'locale_code' => null,
+                ]
+            );
+        }
+
+        $this->info('✓ Payment methods configured: COD + Transfer Bank aktif');
+        $this->info('✓ Shipping carriers configured: Reguler (Rp 15.000) + Gratis Ongkir');
+
         $categoriesData = [
             1 => [
                 'name' => 'Root',

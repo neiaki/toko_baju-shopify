@@ -3,7 +3,7 @@ import { Collection, Product } from '../types';
 import { getProducts } from './products';
 
 const getCollectionQuery = `
-  query getCollection($handle: String!) {
+  query getCollection($handle: String!, $country: CountryCode) @inContext(country: $country) {
     collection(handle: $handle) {
       id
       title
@@ -65,7 +65,7 @@ function reshapeCollection(shopifyCollection: any): Collection | undefined {
   };
 }
 
-export async function getCollectionByHandle(handle: string): Promise<Collection | undefined> {
+export async function getCollectionByHandle(handle: string, country?: string): Promise<Collection | undefined> {
   const virtualCollections: Record<string, Collection> = {
     'all': { id: 'all', title: 'Semua Koleksi', handle: 'all', description: 'Semua produk terbaik kami.', image: '', productIds: [] },
     'kaos': { id: 'kaos', title: 'Kaos', handle: 'kaos', description: 'Koleksi Kaos', image: '', productIds: [] },
@@ -82,42 +82,31 @@ export async function getCollectionByHandle(handle: string): Promise<Collection 
 
   const res = await shopifyFetch<any>({
     query: getCollectionQuery,
-    variables: { handle },
+    variables: { handle, country },
   });
 
   return reshapeCollection(res.body.data?.collection);
 }
 
-export async function getProductsForCollection(handle: string): Promise<Product[]> {
+export async function getProductsForCollection(handle: string, country?: string): Promise<Product[]> {
   const { getProductsByType, getProductsByTag, getProducts } = await import('./products');
   
-  if (handle === 'all') return getProducts();
-  if (handle === 'kaos') return getProductsByType('Kaos');
-  if (handle === 'kemeja') return getProductsByType('Kemeja');
-  if (handle === 'celana') return getProductsByType('Celana');
-  if (handle === 'aksesoris') return getProductsByType('Aksesoris');
-  if (handle === 'sale') return getProductsByTag('sale');
-  if (handle === 'new-arrivals') return getProductsByTag('new-arrival');
+  if (handle === 'all') return getProducts(undefined, country);
+  if (handle === 'kaos') return getProductsByType('Kaos', country);
+  if (handle === 'kemeja') return getProductsByType('Kemeja', country);
+  if (handle === 'celana') return getProductsByType('Celana', country);
+  if (handle === 'aksesoris') return getProductsByType('Aksesoris', country);
+  if (handle === 'sale') return getProductsByTag('sale', country);
+  if (handle === 'new-arrivals') return getProductsByTag('new-arrival', country);
   
   const res = await shopifyFetch<any>({
     query: getCollectionQuery,
-    variables: { handle },
+    variables: { handle, country },
   });
 
   const shopifyCollection = res.body.data?.collection;
   if (!shopifyCollection) return [];
 
-  // Re-use the reshape logic from products (import dynamically or recreate minimally)
-  // For simplicity, we assume we fetch products with enough details.
-  // In a real app, you'd export reshapeProduct from products.ts and use it here.
-  const { getProductByHandle } = await import('./products');
-  
-  // To get full product objects, we can either expand the collection query, 
-  // or fetch them. For now, since the query above doesn't fetch all variants,
-  // it might be simpler to just query products by collection handle in Shopify:
-  // query: `collection:${handle}` but Storefront API doesn't support query by collection handle directly in products query sometimes.
-  
-  // We will return a simplified reshape here:
   return shopifyCollection.products.edges.map(({ node }: any) => ({
     id: node.id,
     title: node.title,
@@ -139,6 +128,7 @@ export async function getProductsForCollection(handle: string): Promise<Product[
       sku: '',
       price: parseFloat(v.node.price.amount),
       compareAtPrice: v.node.compareAtPrice ? parseFloat(v.node.compareAtPrice.amount) : null,
+      currencyCode: v.node.price.currencyCode,
       inventoryQuantity: 10,
       availableForSale: v.node.availableForSale,
       selectedOptions: [],

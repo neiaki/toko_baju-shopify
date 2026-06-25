@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Bebas_Neue } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/lib/context/cart-context";
+import { LanguageProvider } from "@/lib/context/language-context";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { AnnouncementBar } from "@/components/shared/announcement-bar";
@@ -20,7 +21,7 @@ const bebasNeue = Bebas_Neue({
 });
 
 export const metadata: Metadata = {
-  title: "TOKO FASHION | Premium Urban Streetwear",
+  title: "NEki Store | Premium Urban Streetwear",
   description: "Temukan koleksi streetwear urban terbaik dengan harga terjangkau. Dirancang untuk generasi muda yang berani tampil beda.",
 };
 
@@ -33,12 +34,14 @@ export default function RootLayout({
     <html lang="id" className={`${inter.variable} ${bebasNeue.variable} dark`} suppressHydrationWarning>
       <body className="font-body antialiased min-h-screen flex flex-col" suppressHydrationWarning>
         <CartProvider>
-          <AnnouncementBar />
-          <Navbar />
-          <main className="flex-1">
-            {children}
-          </main>
-          <Footer />
+          <LanguageProvider>
+            <AnnouncementBar />
+            <Navbar />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
+          </LanguageProvider>
         </CartProvider>
       </body>
     </html>

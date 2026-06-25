@@ -62,15 +62,15 @@ export function ProductForm({ product }: ProductFormProps) {
         {selectedVariant?.compareAtPrice ? (
           <>
             <span className="text-brand-red font-bold text-2xl">
-              {formatPrice(selectedVariant.price)}
+              {formatPrice(selectedVariant.price, selectedVariant.currencyCode)}
             </span>
             <span className="text-muted-foreground line-through text-lg">
-              {formatPrice(selectedVariant.compareAtPrice)}
+              {formatPrice(selectedVariant.compareAtPrice, selectedVariant.currencyCode)}
             </span>
           </>
         ) : (
           <span className="font-bold text-2xl">
-            {formatPrice(selectedVariant?.price || 0)}
+            {formatPrice(selectedVariant?.price || 0, selectedVariant?.currencyCode)}
           </span>
         )}
       </div>

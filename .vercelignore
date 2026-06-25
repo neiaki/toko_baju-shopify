@@ -1,0 +1,7 @@
+# Ignore the Laravel subproject and temporary files to optimize Vercel deployment builds
+toko-baju-bagisto/
+shopify_dummy_products.csv
+prd_shopify_fashion_store.md
+.env.local
+.next/
+node_modules/

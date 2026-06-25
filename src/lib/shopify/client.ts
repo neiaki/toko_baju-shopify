@@ -48,15 +48,16 @@ export async function shopifyFetch<T>({
     const body = await result.json();
 
     if (body.errors) {
-      throw body.errors[0];
+      const err = body.errors[0];
+      throw new Error(err.message || 'Unknown Shopify API error');
     }
 
     return {
       status: result.status,
       body,
     };
-  } catch (error) {
-    console.error("Error connecting to Shopify API:", error);
+  } catch (error: any) {
+    console.error("Error connecting to Shopify API:", error.message || error);
     throw error;
   }
 }

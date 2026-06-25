@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Filter, X } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { useCart } from "@/lib/context/cart-context";
 
 interface FilterSidebarProps {
   categories: string[];
@@ -10,10 +11,9 @@ interface FilterSidebarProps {
   colors: string[];
 }
 
-export function FilterSidebar({ categories, sizes, colors }: FilterSidebarProps) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const FilterContent = () => (
+function FilterContent({ categories, sizes, colors }: FilterSidebarProps) {
+  const { currency } = useCart();
+  return (
     <div className="space-y-8">
       {/* Categories */}
       <div>
@@ -74,15 +74,19 @@ export function FilterSidebar({ categories, sizes, colors }: FilterSidebarProps)
       <div>
         <h3 className="text-sm font-semibold uppercase tracking-wider mb-4">Harga</h3>
         <div className="space-y-4">
-          <input type="range" min="0" max="1000000" className="w-full accent-brand-black dark:accent-white" />
+          <input type="range" min="0" max={currency === "IDR" ? 1000000 : 100} className="w-full accent-brand-black dark:accent-white" />
           <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>Rp 0</span>
-            <span>Rp 1.000.000+</span>
+            <span>{currency === "IDR" ? "Rp 0" : "$0"}</span>
+            <span>{currency === "IDR" ? "Rp 1.000.000+" : "$100+"}</span>
           </div>
         </div>
       </div>
     </div>
   );
+}
+
+export function FilterSidebar({ categories, sizes, colors }: FilterSidebarProps) {
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
@@ -98,7 +102,7 @@ export function FilterSidebar({ categories, sizes, colors }: FilterSidebarProps)
               <SheetTitle className="font-display tracking-wider text-2xl">Filter</SheetTitle>
             </SheetHeader>
             <div className="overflow-y-auto h-[calc(100vh-120px)] pb-10">
-              <FilterContent />
+              <FilterContent categories={categories} sizes={sizes} colors={colors} />
             </div>
             <div className="absolute bottom-0 left-0 right-0 p-4 bg-background border-t">
               <button 
@@ -119,7 +123,7 @@ export function FilterSidebar({ categories, sizes, colors }: FilterSidebarProps)
             <h2 className="font-display text-2xl tracking-wider">Filter</h2>
             <button className="text-xs text-muted-foreground underline hover:text-foreground">Reset</button>
           </div>
-          <FilterContent />
+          <FilterContent categories={categories} sizes={sizes} colors={colors} />
         </div>
       </div>
     </>

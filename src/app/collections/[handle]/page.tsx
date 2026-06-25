@@ -5,18 +5,23 @@ import { ProductCard } from "@/components/shared/product-card";
 import { FilterSidebar } from "@/components/collection/filter-sidebar";
 import { SortSelect } from "@/components/collection/sort-select";
 
+import { cookies } from "next/headers";
+
 export default async function CollectionPage(props: { params: Promise<{ handle: string }> }) {
   const params = await props.params;
-  const collection = await getCollectionByHandle(params.handle);
+  const cookieStore = await cookies();
+  const country = cookieStore.get("x-country")?.value || "ID";
+
+  const collection = await getCollectionByHandle(params.handle, country);
   
   if (!collection && params.handle !== "all") {
     notFound();
   }
 
   const title = collection ? collection.title : "Semua Koleksi";
-  const description = collection ? collection.description : "Lihat semua koleksi pakaian streetwear urban terbaik dari Toko Fashion.";
+  const description = collection ? collection.description : "Lihat semua koleksi pakaian streetwear urban terbaik dari NEki Store.";
   
-  const displayProducts = params.handle === "all" ? await getProducts() : await getProductsForCollection(params.handle);
+  const displayProducts = params.handle === "all" ? await getProducts(undefined, country) : await getProductsForCollection(params.handle, country);
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">

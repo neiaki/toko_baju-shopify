@@ -1,5 +1,5 @@
 // =============================================================================
-// TOKO FASHION — Type Definitions
+// NEki Store — Type Definitions
 // Follows Shopify data schema for products, collections, and cart
 // =============================================================================
 
@@ -19,6 +19,7 @@ export interface ProductVariant {
   inventoryQuantity: number;
   availableForSale: boolean;
   selectedOptions: { name: string; value: string }[];
+  currencyCode?: string;
 }
 
 export interface ProductOption {
@@ -62,6 +63,7 @@ export interface CartItem {
   quantity: number;
   image: string;
   handle: string;
+  currencyCode?: string;
 }
 
 export interface Cart {
@@ -72,4 +74,5 @@ export interface Cart {
   discountAmount: number;
   cartId?: string;
   checkoutUrl?: string;
+  currencyCode?: string;
 }

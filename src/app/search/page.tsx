@@ -1,11 +1,15 @@
 import { searchProducts } from "@/lib/shopify/products";
 import { ProductCard } from "@/components/shared/product-card";
 
+import { cookies } from "next/headers";
+
 export default async function SearchPage(props: { searchParams: Promise<{ q: string }> }) {
   const searchParams = await props.searchParams;
+  const cookieStore = await cookies();
+  const country = cookieStore.get("x-country")?.value || "ID";
   const query = searchParams.q || "";
   
-  const results = query ? await searchProducts(query) : [];
+  const results = query ? await searchProducts(query, country) : [];
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-20 min-h-[60vh]">
@@ -15,7 +19,7 @@ export default async function SearchPage(props: { searchParams: Promise<{ q: str
         </h1>
         {query ? (
           <p className="text-muted-foreground text-lg">
-            {results.length} hasil untuk <span className="font-semibold text-foreground">"{query}"</span>
+            {results.length} hasil untuk <span className="font-semibold text-foreground">&ldquo;{query}&rdquo;</span>
           </p>
         ) : (
           <p className="text-muted-foreground text-lg">

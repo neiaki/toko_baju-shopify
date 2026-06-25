@@ -22,13 +22,21 @@ export function CartDrawer() {
   const [isOpen, setIsOpen] = useState(false);
   const [discountCode, setDiscountCode] = useState("");
   const [discountStatus, setDiscountStatus] = useState<"idle" | "success" | "error">("idle");
+  const [isApplyingDiscount, setIsApplyingDiscount] = useState(false);
 
-  const handleApplyDiscount = (e: React.FormEvent) => {
+  const handleApplyDiscount = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!discountCode.trim()) return;
+    if (!discountCode.trim() || isApplyingDiscount) return;
     
-    const success = applyDiscount(discountCode);
-    setDiscountStatus(success ? "success" : "error");
+    setIsApplyingDiscount(true);
+    try {
+      const success = await applyDiscount(discountCode);
+      setDiscountStatus(success ? "success" : "error");
+    } catch {
+      setDiscountStatus("error");
+    } finally {
+      setIsApplyingDiscount(false);
+    }
   };
 
   const handleCheckout = () => {
@@ -146,11 +154,11 @@ export function CartDrawer() {
                       <div className="text-right">
                         {item.compareAtPrice && (
                           <div className="text-xs text-muted-foreground line-through">
-                            {formatPrice(item.compareAtPrice * item.quantity)}
+                            {formatPrice(item.compareAtPrice * item.quantity, item.currencyCode || cart.currencyCode || "IDR")}
                           </div>
                         )}
                         <div className={item.compareAtPrice ? "text-brand-red font-semibold text-sm" : "font-semibold text-sm"}>
-                          {formatPrice(item.price * item.quantity)}
+                          {formatPrice(item.price * item.quantity, item.currencyCode || cart.currencyCode || "IDR")}
                         </div>
                       </div>
                     </div>
@@ -175,8 +183,8 @@ export function CartDrawer() {
                     }}
                   />
                 </div>
-                <Button type="submit" variant="outline" className="rounded-none border-border">
-                  Terapkan
+                <Button type="submit" variant="outline" className="rounded-none border-border" disabled={isApplyingDiscount}>
+                  {isApplyingDiscount ? '...' : 'Terapkan'}
                 </Button>
                 
                 {discountStatus === "error" && (
@@ -195,17 +203,17 @@ export function CartDrawer() {
               <div className="space-y-2 pt-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>{formatPrice(subtotal)}</span>
+                  <span>{formatPrice(subtotal, cart.currencyCode || "IDR")}</span>
                 </div>
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-sm text-green-600">
                     <span>Diskon</span>
-                    <span>-{formatPrice(discountAmount)}</span>
+                    <span>-{formatPrice(discountAmount, cart.currencyCode || "IDR")}</span>
                   </div>
                 )}
                 <div className="flex justify-between font-bold text-lg pt-2 border-t border-border/50">
                   <span>Total</span>
-                  <span>{formatPrice(total)}</span>
+                  <span>{formatPrice(total, cart.currencyCode || "IDR")}</span>
                 </div>
               </div>
 
@@ -215,7 +223,7 @@ export function CartDrawer() {
                   onClick={handleCheckout}
                   className="w-full bg-brand-black hover:bg-brand-black/90 text-white dark:bg-white dark:text-black dark:hover:bg-white/90 rounded-none h-12 text-sm uppercase tracking-widest font-bold"
                 >
-                  Checkout ({formatPrice(total)})
+                  Checkout ({formatPrice(total, cart.currencyCode || "IDR")})
                 </Button>
                 <p className="text-[10px] text-center text-muted-foreground mt-3 tracking-wide">
                   Pajak dan ongkos kirim dihitung saat checkout

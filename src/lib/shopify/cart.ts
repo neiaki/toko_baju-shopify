@@ -5,6 +5,10 @@ const cartFragment = `
     id
     checkoutUrl
     totalQuantity
+    discountCodes {
+      code
+      applicable
+    }
     cost {
       subtotalAmount {
         amount
@@ -56,8 +60,8 @@ const cartFragment = `
 `;
 
 const createCartMutation = `
-  mutation createCart($lineItems: [CartLineInput!]) {
-    cartCreate(input: { lines: $lineItems }) {
+  mutation createCart($lineItems: [CartLineInput!], $buyerIdentity: CartBuyerIdentityInput) {
+    cartCreate(input: { lines: $lineItems, buyerIdentity: $buyerIdentity }) {
       cart {
         ...cart
       }
@@ -108,9 +112,24 @@ const getCartQuery = `
   ${cartFragment}
 `;
 
-export async function createCart() {
+const updateCartBuyerIdentityMutation = `
+  mutation updateCartBuyerIdentity($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!) {
+    cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {
+      cart {
+        ...cart
+      }
+    }
+  }
+  ${cartFragment}
+`;
+
+export async function createCart(countryCode?: string) {
   const res = await shopifyFetch<any>({
     query: createCartMutation,
+    variables: {
+      lineItems: [],
+      ...(countryCode && { buyerIdentity: { countryCode } }),
+    },
     cache: 'no-store',
   });
   return res.body.data?.cartCreate?.cart;
@@ -134,10 +153,24 @@ export async function removeFromCart(cartId: string, lineIds: string[]) {
   return res.body.data?.cartLinesRemove?.cart;
 }
 
-export async function updateCart(cartId: string, lines: { id: string; merchandiseId: string; quantity: number }[]) {
+export async function updateCart(
+  cartId: string,
+  lines: { id: string; merchandiseId?: string; quantity: number }[]
+) {
+  const formattedLines = lines.map((line) => {
+    const item: any = {
+      id: line.id,
+      quantity: line.quantity,
+    };
+    if (line.merchandiseId) {
+      item.merchandiseId = line.merchandiseId;
+    }
+    return item;
+  });
+
   const res = await shopifyFetch<any>({
     query: updateCartMutation,
-    variables: { cartId, lines },
+    variables: { cartId, lines: formattedLines },
     cache: 'no-store',
   });
   return res.body.data?.cartLinesUpdate?.cart;
@@ -151,3 +184,48 @@ export async function getCart(cartId: string) {
   });
   return res.body.data?.cart;
 }
+
+export async function updateCartBuyerIdentity(cartId: string, countryCode: string) {
+  const res = await shopifyFetch<any>({
+    query: updateCartBuyerIdentityMutation,
+    variables: {
+      cartId,
+      buyerIdentity: { countryCode },
+    },
+    cache: 'no-store',
+  });
+  return res.body.data?.cartBuyerIdentityUpdate?.cart;
+}
+
+const applyDiscountCodesMutation = `
+  mutation cartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]) {
+    cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
+      cart {
+        ...cart
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+  ${cartFragment}
+`;
+
+export async function applyDiscountCodes(cartId: string, discountCodes: string[]) {
+  const res = await shopifyFetch<any>({
+    query: applyDiscountCodesMutation,
+    variables: { cartId, discountCodes },
+    cache: 'no-store',
+  });
+  const result = res.body.data?.cartDiscountCodesUpdate;
+  if (result?.userErrors?.length > 0) {
+    return null;
+  }
+  return result?.cart;
+}
+
+export async function removeDiscountCodes(cartId: string) {
+  return applyDiscountCodes(cartId, []);
+}
+

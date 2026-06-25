@@ -5,9 +5,14 @@ import { SectionHeader } from "@/components/shared/section-header";
 import { ProductCard } from "@/components/shared/product-card";
 import { getProductsByTag } from "@/lib/shopify/products";
 
+import { cookies } from "next/headers";
+
 export default async function Home() {
-  const newArrivals = (await getProductsByTag("new-arrival")).slice(0, 8);
-  const bestSellers = (await getProductsByTag("best-seller")).slice(0, 4);
+  const cookieStore = await cookies();
+  const country = cookieStore.get("x-country")?.value || "ID";
+
+  const newArrivals = (await getProductsByTag("new-arrival", country)).slice(0, 8);
+  const bestSellers = (await getProductsByTag("best-seller", country)).slice(0, 4);
 
   return (
     <div className="flex flex-col gap-0 w-full overflow-hidden">
@@ -52,7 +57,7 @@ export default async function Home() {
       {/* Instagram Feed Mock */}
       <section className="container mx-auto px-4 py-16 md:py-24">
         <div className="text-center mb-10">
-          <h2 className="font-display text-4xl tracking-wider mb-2">@TOKOFASHION.ID</h2>
+          <h2 className="font-display text-4xl tracking-wider mb-2">@NEKISTORE.ID</h2>
           <p className="text-muted-foreground">Tag us on Instagram to be featured</p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-4">
@@ -60,8 +65,8 @@ export default async function Home() {
             "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
             "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=400&q=80",
             "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&q=80",
-            "https://images.unsplash.com/photo-1509631179647-0c37cb110060?w=400&q=80",
-            "https://images.unsplash.com/photo-1550614000-4b95d4ed7982?w=400&q=80"
+            "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&q=80",
+            "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=400&q=80"
           ].map((src, i) => (
             <a key={i} href="#" className="relative aspect-square overflow-hidden group block">
               <img src={src} alt="Instagram Feed" className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110" />

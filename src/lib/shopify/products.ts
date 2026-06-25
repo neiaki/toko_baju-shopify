@@ -2,7 +2,7 @@ import { shopifyFetch } from './client';
 import { Product } from '../types';
 
 const getProductQuery = `
-  query getProduct($handle: String!) {
+  query getProduct($handle: String!, $country: CountryCode) @inContext(country: $country) {
     product(handle: $handle) {
       id
       title
@@ -51,7 +51,7 @@ const getProductQuery = `
 `;
 
 const getProductsQuery = `
-  query getProducts($query: String, $first: Int = 10) {
+  query getProducts($query: String, $first: Int = 10, $country: CountryCode) @inContext(country: $country) {
     products(first: $first, query: $query) {
       edges {
         node {
@@ -120,6 +120,7 @@ function reshapeProduct(shopifyProduct: any): Product | undefined {
       sku: node.sku || '',
       price: parseFloat(node.price.amount),
       compareAtPrice: node.compareAtPrice ? parseFloat(node.compareAtPrice.amount) : null,
+      currencyCode: node.price.currencyCode,
       inventoryQuantity: 10, // Storefront API doesn't expose raw quantity, we rely on availableForSale
       availableForSale: node.availableForSale,
       selectedOptions: node.selectedOptions,
@@ -129,33 +130,33 @@ function reshapeProduct(shopifyProduct: any): Product | undefined {
   };
 }
 
-export async function getProductByHandle(handle: string): Promise<Product | undefined> {
+export async function getProductByHandle(handle: string, country?: string): Promise<Product | undefined> {
   const res = await shopifyFetch<any>({
     query: getProductQuery,
-    variables: { handle },
+    variables: { handle, country },
   });
 
   return reshapeProduct(res.body.data?.product);
 }
 
-export async function getProducts(query?: string): Promise<Product[]> {
+export async function getProducts(query?: string, country?: string): Promise<Product[]> {
   const res = await shopifyFetch<any>({
     query: getProductsQuery,
-    variables: { query, first: 12 },
+    variables: { query, first: 12, country },
   });
 
   const products = res.body.data?.products?.edges.map(({ node }: any) => reshapeProduct(node));
   return products?.filter((p: Product | undefined) => p !== undefined) || [];
 }
 
-export async function getProductsByTag(tag: string): Promise<Product[]> {
-  return getProducts(`tag:${tag}`);
+export async function getProductsByTag(tag: string, country?: string): Promise<Product[]> {
+  return getProducts(`tag:${tag}`, country);
 }
 
-export async function getProductsByType(type: string): Promise<Product[]> {
-  return getProducts(`product_type:${type}`);
+export async function getProductsByType(type: string, country?: string): Promise<Product[]> {
+  return getProducts(`product_type:${type}`, country);
 }
 
-export async function searchProducts(query: string): Promise<Product[]> {
-  return getProducts(`title:${query}*`);
+export async function searchProducts(query: string, country?: string): Promise<Product[]> {
+  return getProducts(`title:${query}*`, country);
 }

@@ -6,16 +6,21 @@ import { ProductTabs } from "@/components/product/product-tabs";
 import { ProductCard } from "@/components/shared/product-card";
 import { SectionHeader } from "@/components/shared/section-header";
 
+import { cookies } from "next/headers";
+
 export default async function ProductPage(props: { params: Promise<{ handle: string }> }) {
   const params = await props.params;
-  const product = await getProductByHandle(params.handle);
+  const cookieStore = await cookies();
+  const country = cookieStore.get("x-country")?.value || "ID";
+
+  const product = await getProductByHandle(params.handle, country);
 
   if (!product) {
     notFound();
   }
 
   // Get related products (same type, excluding current)
-  const allRelated = await getProductsByType(product.productType);
+  const allRelated = await getProductsByType(product.productType, country);
   const relatedProducts = allRelated
     .filter(p => p.id !== product.id)
     .slice(0, 4);

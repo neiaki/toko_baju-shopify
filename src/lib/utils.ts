@@ -5,11 +5,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatPrice(amount: number): string {
-  return new Intl.NumberFormat("id-ID", {
+export function formatPrice(amount: number, currency: string = "IDR"): string {
+  return new Intl.NumberFormat(currency === "IDR" ? "id-ID" : "en-US", {
     style: "currency",
-    currency: "IDR",
+    currency: currency,
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    maximumFractionDigits: currency === "IDR" ? 0 : 2,
   }).format(amount);
 }

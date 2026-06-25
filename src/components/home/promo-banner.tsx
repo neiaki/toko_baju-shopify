@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useLanguage } from "@/lib/context/language-context";
 
 export function PromoBanner() {
+  const { t } = useLanguage();
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -47,25 +49,25 @@ export function PromoBanner() {
           {/* Left Text */}
           <div className="flex-1 text-center md:text-left">
             <h2 className="font-display text-5xl md:text-7xl tracking-wider mb-4">
-              FLASH SALE
+              {t.promo.title}
             </h2>
             <p className="text-xl md:text-2xl font-light mb-8 max-w-md">
-              Diskon hingga 50% untuk semua koleksi. Waktu terbatas!
+              {t.promo.description}
             </p>
             <Link 
               href="/collections/sale"
               className="inline-block bg-white text-brand-red px-8 py-4 text-sm font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-colors"
             >
-              Belanja Sale
+              {t.promo.shopSale}
             </Link>
           </div>
 
           {/* Right Timer */}
           <div className="flex-1 flex justify-center md:justify-end gap-3 sm:gap-4">
-            <TimeBox value={timeLeft.days} label="Hari" />
-            <TimeBox value={timeLeft.hours} label="Jam" />
-            <TimeBox value={timeLeft.minutes} label="Menit" />
-            <TimeBox value={timeLeft.seconds} label="Detik" />
+            <TimeBox value={timeLeft.days} label={t.promo.days} />
+            <TimeBox value={timeLeft.hours} label={t.promo.hours} />
+            <TimeBox value={timeLeft.minutes} label={t.promo.minutes} />
+            <TimeBox value={timeLeft.seconds} label={t.promo.seconds} />
           </div>
 
         </div>

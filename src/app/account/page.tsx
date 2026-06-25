@@ -16,7 +16,7 @@ export default function AccountPage() {
           </h1>
           <p className="text-muted-foreground">
             {isLogin 
-              ? "Masuk ke akun Toko Fashion Anda" 
+              ? "Masuk ke akun NEki Store Anda" 
               : "Buat akun untuk checkout lebih cepat dan lihat riwayat pesanan"}
           </p>
         </div>

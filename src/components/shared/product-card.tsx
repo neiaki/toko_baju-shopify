@@ -92,15 +92,15 @@ export function ProductCard({ product, className }: ProductCardProps) {
           {isSale && compareAtPrice ? (
             <>
               <span className="text-brand-red font-semibold text-sm">
-                {formatPrice(currentPrice)}
+                {formatPrice(currentPrice, product.variants[0]?.currencyCode)}
               </span>
               <span className="text-muted-foreground line-through text-xs">
-                {formatPrice(compareAtPrice)}
+                {formatPrice(compareAtPrice, product.variants[0]?.currencyCode)}
               </span>
             </>
           ) : (
             <span className="font-semibold text-sm text-foreground">
-              {formatPrice(currentPrice)}
+              {formatPrice(currentPrice, product.variants[0]?.currencyCode)}
             </span>
           )}
         </div>

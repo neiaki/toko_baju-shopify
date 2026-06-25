@@ -5,6 +5,8 @@ import { Filter, X } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useCart } from "@/lib/context/cart-context";
 
+import { formatPrice } from "@/lib/utils";
+
 interface FilterSidebarProps {
   categories: string[];
   sizes: string[];
@@ -13,6 +15,21 @@ interface FilterSidebarProps {
 
 function FilterContent({ categories, sizes, colors }: FilterSidebarProps) {
   const { currency } = useCart();
+  const maxAllowedPrice = currency === "IDR" ? 1000000 : 100;
+  
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(maxAllowedPrice);
+
+  const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = Number(e.target.value);
+    if (!isNaN(val)) setMinPrice(val);
+  };
+
+  const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = Number(e.target.value);
+    if (!isNaN(val)) setMaxPrice(val);
+  };
+
   return (
     <div className="space-y-8">
       {/* Categories */}
@@ -74,10 +91,44 @@ function FilterContent({ categories, sizes, colors }: FilterSidebarProps) {
       <div>
         <h3 className="text-sm font-semibold uppercase tracking-wider mb-4">Harga</h3>
         <div className="space-y-4">
-          <input type="range" min="0" max={currency === "IDR" ? 1000000 : 100} className="w-full accent-brand-black dark:accent-white" />
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{currency === "IDR" ? "Rp 0" : "$0"}</span>
-            <span>{currency === "IDR" ? "Rp 1.000.000+" : "$100+"}</span>
+          <input 
+            type="range" 
+            min="0" 
+            max={maxAllowedPrice} 
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(Number(e.target.value))}
+            className="w-full accent-brand-black dark:accent-white" 
+          />
+          <div className="flex items-center gap-2">
+            <div className="flex-1">
+              <label className="text-xs text-muted-foreground mb-1 block">Min</label>
+              <div className="relative">
+                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                  {currency === "IDR" ? "Rp" : "$"}
+                </span>
+                <input 
+                  type="number" 
+                  value={minPrice}
+                  onChange={handleMinChange}
+                  className="w-full border border-gray-300 dark:border-gray-700 bg-transparent py-1.5 pl-7 pr-2 text-sm focus:outline-none focus:border-brand-black dark:focus:border-white transition-colors" 
+                />
+              </div>
+            </div>
+            <span className="text-muted-foreground self-end pb-2">-</span>
+            <div className="flex-1">
+              <label className="text-xs text-muted-foreground mb-1 block">Max</label>
+              <div className="relative">
+                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                  {currency === "IDR" ? "Rp" : "$"}
+                </span>
+                <input 
+                  type="number" 
+                  value={maxPrice}
+                  onChange={handleMaxChange}
+                  className="w-full border border-gray-300 dark:border-gray-700 bg-transparent py-1.5 pl-7 pr-2 text-sm focus:outline-none focus:border-brand-black dark:focus:border-white transition-colors" 
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -40,7 +40,7 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
           <ProductForm product={product} />
           
           <div className="mt-12 pt-12 border-t border-border">
-            <ProductTabs descriptionHtml={product.descriptionHtml} />
+            <ProductTabs product={product} />
           </div>
         </div>
       </div>

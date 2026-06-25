@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { Filter, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Filter } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useCart } from "@/lib/context/cart-context";
-
-import { formatPrice } from "@/lib/utils";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 interface FilterSidebarProps {
   categories: string[];
@@ -17,8 +16,57 @@ function FilterContent({ categories, sizes, colors }: FilterSidebarProps) {
   const { currency } = useCart();
   const maxAllowedPrice = currency === "IDR" ? 1000000 : 100;
   
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(maxAllowedPrice);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Get initial values from URL
+  const minPriceParam = searchParams.get("minPrice");
+  const maxPriceParam = searchParams.get("maxPrice");
+  const activeCategories = searchParams.get("category")?.split(",") || [];
+  const activeSizes = searchParams.get("size")?.split(",") || [];
+  const activeColors = searchParams.get("color")?.split(",") || [];
+
+  // Local state for price inputs & slider
+  const [minPrice, setMinPrice] = useState(minPriceParam ? Number(minPriceParam) : 0);
+  const [maxPrice, setMaxPrice] = useState(maxPriceParam ? Number(maxPriceParam) : maxAllowedPrice);
+
+  // Sync local price state if URL changes externally
+  useEffect(() => {
+    setMinPrice(minPriceParam ? Number(minPriceParam) : 0);
+  }, [minPriceParam]);
+
+  useEffect(() => {
+    setMaxPrice(maxPriceParam ? Number(maxPriceParam) : maxAllowedPrice);
+  }, [maxPriceParam, maxAllowedPrice]);
+
+  const updateUrl = (updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, val]) => {
+      if (val === null || val === "") {
+        params.delete(key);
+      } else {
+        params.set(key, val);
+      }
+    });
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  // Debounce the price URL update to prevent spamming server transitions while sliding/typing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const currentMin = searchParams.get("minPrice") ? Number(searchParams.get("minPrice")) : 0;
+      const currentMax = searchParams.get("maxPrice") ? Number(searchParams.get("maxPrice")) : maxAllowedPrice;
+      
+      if (minPrice !== currentMin || maxPrice !== currentMax) {
+        updateUrl({
+          minPrice: minPrice > 0 ? String(minPrice) : null,
+          maxPrice: maxPrice < maxAllowedPrice ? String(maxPrice) : null,
+        });
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [minPrice, maxPrice, maxAllowedPrice]);
 
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = Number(e.target.value);
@@ -30,20 +78,56 @@ function FilterContent({ categories, sizes, colors }: FilterSidebarProps) {
     if (!isNaN(val)) setMaxPrice(val);
   };
 
+  const toggleCategory = (cat: string) => {
+    const next = activeCategories.includes(cat)
+      ? activeCategories.filter(c => c !== cat)
+      : [...activeCategories, cat];
+    updateUrl({ category: next.length ? next.join(",") : null });
+  };
+
+  const toggleSize = (size: string) => {
+    const next = activeSizes.includes(size)
+      ? activeSizes.filter(s => s !== size)
+      : [...activeSizes, size];
+    updateUrl({ size: next.length ? next.join(",") : null });
+  };
+
+  const toggleColor = (color: string) => {
+    const next = activeColors.includes(color)
+      ? activeColors.filter(c => c !== color)
+      : [...activeColors, color];
+    updateUrl({ color: next.length ? next.join(",") : null });
+  };
+
   return (
     <div className="space-y-8">
       {/* Categories */}
       <div>
         <h3 className="text-sm font-semibold uppercase tracking-wider mb-4">Kategori</h3>
         <div className="space-y-2">
-          {categories.map((category) => (
-            <label key={category} className="flex items-center gap-3 cursor-pointer group">
-              <div className="w-4 h-4 border border-gray-300 dark:border-gray-700 flex items-center justify-center group-hover:border-brand-black dark:group-hover:border-white transition-colors">
-                <div className="w-2 h-2 bg-transparent"></div>
-              </div>
-              <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">{category}</span>
-            </label>
-          ))}
+          {categories.map((category) => {
+            const isChecked = activeCategories.includes(category);
+            return (
+              <button
+                key={category}
+                onClick={() => toggleCategory(category)}
+                className="flex items-center gap-3 text-left w-full cursor-pointer group"
+              >
+                <div className={`w-4 h-4 border flex items-center justify-center transition-colors ${
+                  isChecked 
+                    ? "border-brand-black bg-brand-black text-white dark:border-white dark:bg-white dark:text-black" 
+                    : "border-gray-300 dark:border-gray-700 group-hover:border-brand-black dark:group-hover:border-white"
+                }`}>
+                  {isChecked && <div className="w-1.5 h-1.5 bg-white dark:bg-black rounded-full" />}
+                </div>
+                <span className={`text-sm transition-colors ${
+                  isChecked ? "text-foreground font-medium" : "text-muted-foreground group-hover:text-foreground"
+                }`}>
+                  {category}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -51,14 +135,22 @@ function FilterContent({ categories, sizes, colors }: FilterSidebarProps) {
       <div>
         <h3 className="text-sm font-semibold uppercase tracking-wider mb-4">Ukuran</h3>
         <div className="flex flex-wrap gap-2">
-          {sizes.map((size) => (
-            <button
-              key={size}
-              className="min-w-[40px] h-10 border border-gray-300 dark:border-gray-700 text-sm flex items-center justify-center hover:border-brand-black dark:hover:border-white transition-colors"
-            >
-              {size}
-            </button>
-          ))}
+          {sizes.map((size) => {
+            const isActive = activeSizes.includes(size);
+            return (
+              <button
+                key={size}
+                onClick={() => toggleSize(size)}
+                className={`min-w-[40px] h-10 border text-sm flex items-center justify-center transition-colors ${
+                  isActive
+                    ? "border-brand-black bg-brand-black text-white dark:border-white dark:bg-white dark:text-black font-bold"
+                    : "border-gray-300 dark:border-gray-700 hover:border-brand-black dark:hover:border-white text-muted-foreground"
+                }`}
+              >
+                {size}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -67,6 +159,7 @@ function FilterContent({ categories, sizes, colors }: FilterSidebarProps) {
         <h3 className="text-sm font-semibold uppercase tracking-wider mb-4">Warna</h3>
         <div className="flex flex-wrap gap-2">
           {colors.map((color) => {
+            const isActive = activeColors.includes(color);
             const bgColors: Record<string, string> = {
               Hitam: "#000",
               Putih: "#fff",
@@ -78,7 +171,12 @@ function FilterContent({ categories, sizes, colors }: FilterSidebarProps) {
             return (
               <button
                 key={color}
-                className="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-700 hover:ring-2 ring-offset-1 ring-brand-black dark:ring-white transition-all"
+                onClick={() => toggleColor(color)}
+                className={`w-8 h-8 rounded-full border transition-all ${
+                  isActive
+                    ? "ring-2 ring-offset-2 ring-brand-black dark:ring-white scale-110"
+                    : "border-gray-300 dark:border-gray-700 hover:scale-105"
+                }`}
                 style={{ backgroundColor: bgColors[color] || "#ccc" }}
                 title={color}
               />
@@ -138,6 +236,12 @@ function FilterContent({ categories, sizes, colors }: FilterSidebarProps) {
 
 export function FilterSidebar({ categories, sizes, colors }: FilterSidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const resetAll = () => {
+    router.push(pathname, { scroll: false });
+  };
 
   return (
     <>
@@ -172,7 +276,12 @@ export function FilterSidebar({ categories, sizes, colors }: FilterSidebarProps)
         <div className="sticky top-24">
           <div className="flex items-center justify-between mb-8">
             <h2 className="font-display text-2xl tracking-wider">Filter</h2>
-            <button className="text-xs text-muted-foreground underline hover:text-foreground">Reset</button>
+            <button 
+              onClick={resetAll}
+              className="text-xs text-muted-foreground underline hover:text-foreground"
+            >
+              Reset
+            </button>
           </div>
           <FilterContent categories={categories} sizes={sizes} colors={colors} />
         </div>

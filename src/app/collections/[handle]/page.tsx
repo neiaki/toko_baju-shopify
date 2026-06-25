@@ -7,8 +7,18 @@ import { SortSelect } from "@/components/collection/sort-select";
 
 import { cookies } from "next/headers";
 
-export default async function CollectionPage(props: { params: Promise<{ handle: string }> }) {
+export default async function CollectionPage(props: { 
+  params: Promise<{ handle: string }>;
+  searchParams: Promise<{ 
+    minPrice?: string; 
+    maxPrice?: string; 
+    category?: string; 
+    size?: string; 
+    color?: string; 
+  }>;
+}) {
   const params = await props.params;
+  const searchParams = await props.searchParams;
   const cookieStore = await cookies();
   const country = cookieStore.get("x-country")?.value || "ID";
 
@@ -21,7 +31,46 @@ export default async function CollectionPage(props: { params: Promise<{ handle: 
   const title = collection ? collection.title : "Semua Koleksi";
   const description = collection ? collection.description : "Lihat semua koleksi pakaian streetwear urban terbaik dari NEki Store.";
   
-  const displayProducts = params.handle === "all" ? await getProducts(undefined, country) : await getProductsForCollection(params.handle, country);
+  let displayProducts = params.handle === "all" 
+    ? await getProducts(undefined, country) 
+    : await getProductsForCollection(params.handle, country);
+
+  // Apply filters
+  const minPrice = searchParams.minPrice ? Number(searchParams.minPrice) : 0;
+  const maxPrice = searchParams.maxPrice ? Number(searchParams.maxPrice) : Infinity;
+  const activeCategories = searchParams.category ? searchParams.category.split(",") : [];
+  const activeSizes = searchParams.size ? searchParams.size.split(",").map(s => s.toUpperCase()) : [];
+  const activeColors = searchParams.color ? searchParams.color.split(",").map(c => c.toLowerCase()) : [];
+
+  displayProducts = displayProducts.filter((product) => {
+    // 1. Price Filter (check if any variant is within price range)
+    const matchesPrice = product.variants.some((v) => v.price >= minPrice && v.price <= maxPrice);
+
+    // 2. Category Filter
+    const matchesCategory = !activeCategories.length || activeCategories.some(
+      (cat) => product.productType?.toLowerCase() === cat.toLowerCase()
+    );
+
+    // 3. Size Filter
+    const matchesSize = !activeSizes.length || product.variants.some((v) => 
+      v.selectedOptions.some(
+        (opt) => 
+          (opt.name.toLowerCase() === "size" || opt.name.toLowerCase() === "ukuran") && 
+          activeSizes.includes(opt.value.toUpperCase())
+      )
+    );
+
+    // 4. Color Filter
+    const matchesColor = !activeColors.length || product.variants.some((v) => 
+      v.selectedOptions.some(
+        (opt) => 
+          (opt.name.toLowerCase() === "color" || opt.name.toLowerCase() === "warna") && 
+          activeColors.includes(opt.value.toLowerCase())
+      )
+    );
+
+    return matchesPrice && matchesCategory && matchesSize && matchesColor;
+  });
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">

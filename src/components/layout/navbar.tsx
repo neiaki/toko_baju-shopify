@@ -118,15 +118,15 @@ export function Navbar() {
 
           {/* Currency Selector */}
           <div className="flex items-center border border-border px-1.5 py-1 rounded bg-secondary/20 dark:bg-zinc-900/50">
-            <span className="text-base leading-none mr-1">{currency === 'IDR' ? '🇮🇩' : '🇺🇸'}</span>
+            <span className="text-base leading-none mr-1 font-semibold">{currency === 'IDR' ? 'Rp' : '$'}</span>
             <select
               value={currency}
               onChange={(e) => setCurrency(e.target.value as "IDR" | "USD")}
               className="bg-transparent text-xs font-bold uppercase tracking-wider outline-none cursor-pointer border-none ring-0 focus:ring-0 focus:border-0 text-foreground"
               aria-label={t.nav.selectCurrency}
             >
-              <option value="IDR" className="bg-white dark:bg-black text-foreground">🇮🇩 IDR</option>
-              <option value="USD" className="bg-white dark:bg-black text-foreground">🇺🇸 USD</option>
+              <option value="IDR" className="bg-white dark:bg-black text-foreground">IDR</option>
+              <option value="USD" className="bg-white dark:bg-black text-foreground">USD</option>
             </select>
           </div>
           <SearchDialog />

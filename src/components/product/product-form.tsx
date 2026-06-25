@@ -85,7 +85,7 @@ export function ProductForm({ product }: ProductFormProps) {
       </div>
 
       <div className="flex justify-between items-center mb-6">
-        <SizeGuide />
+        <SizeGuide product={product} />
       </div>
 
       <button

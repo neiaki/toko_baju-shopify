@@ -60,8 +60,8 @@ const cartFragment = `
 `;
 
 const createCartMutation = `
-  mutation createCart($lineItems: [CartLineInput!], $buyerIdentity: CartBuyerIdentityInput) {
-    cartCreate(input: { lines: $lineItems, buyerIdentity: $buyerIdentity }) {
+  mutation createCart($lineItems: [CartLineInput!]) {
+    cartCreate(input: { lines: $lineItems }) {
       cart {
         ...cart
       }
@@ -123,12 +123,11 @@ const updateCartBuyerIdentityMutation = `
   ${cartFragment}
 `;
 
-export async function createCart(countryCode?: string) {
+export async function createCart() {
   const res = await shopifyFetch<any>({
     query: createCartMutation,
     variables: {
       lineItems: [],
-      ...(countryCode && { buyerIdentity: { countryCode } }),
     },
     cache: 'no-store',
   });

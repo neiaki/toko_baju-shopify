@@ -63,13 +63,13 @@ function reshapeCart(shopifyCart: any): Cart {
       title: node.merchandise.product.title,
       variantTitle: node.merchandise.title !== 'Default Title' ? node.merchandise.title : '',
       price: parseFloat(node.merchandise.price.amount),
-      compareAtPrice: null, // Shopify Cart API doesn't return compareAtPrice natively in cart lines
+      compareAtPrice: null,
       quantity: node.quantity,
       image: node.merchandise.image?.url || '',
       handle: node.merchandise.product.handle,
       currencyCode: node.merchandise.price.currencyCode,
     };
-  }) || [];
+  }).filter((item: CartItem) => item.quantity > 0) || [];
 
   return {
     cartId: shopifyCart.id,
@@ -129,22 +129,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (cartId) {
         try {
           const shopifyCart = await getCart(cartId);
-          if (shopifyCart) {
-            const cartCurrency = shopifyCart.cost.totalAmount.currencyCode;
-            if (cartCurrency !== storedCurrency) {
-              const countryCode = storedCurrency === 'IDR' ? 'ID' : 'US';
-              const updatedCart = await updateCartBuyerIdentity(cartId, countryCode);
-              if (updatedCart) {
-                setCart(reshapeCart(updatedCart));
-                return;
-              }
-            }
+          if (shopifyCart && shopifyCart.lines?.edges?.length > 0 && shopifyCart.totalQuantity > 0) {
             setCart(reshapeCart(shopifyCart));
           } else {
+            // Cart is invalid or empty, clear it so we can create a fresh one
             localStorage.removeItem(STORAGE_KEY);
           }
         } catch (e) {
           console.error('Failed to fetch cart:', e);
+          localStorage.removeItem(STORAGE_KEY);
         }
       }
     };
@@ -153,36 +146,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const changeCurrency = useCallback(
     async (newCurrency: 'IDR' | 'USD') => {
-      const countryCode = newCurrency === 'IDR' ? 'ID' : 'US';
       setCookie('x-currency', newCurrency);
-      setCookie('x-country', countryCode);
       setCurrencyState(newCurrency);
-
-      if (cart.cartId) {
-        try {
-          const updatedCart = await updateCartBuyerIdentity(cart.cartId, countryCode);
-          if (updatedCart) {
-            setCart(reshapeCart(updatedCart));
-          }
-        } catch (e) {
-          console.error('Failed to update cart buyer identity:', e);
-        }
-      }
 
       // Refresh Next.js server/page components to update pricing based on cookie
       window.location.reload();
     },
-    [cart.cartId]
+    []
   );
 
   const addItem = useCallback(
     async (variantId: string, quantity: number) => {
       let currentCartId = cart.cartId;
       let shopifyCart;
-      const currentCountry = currency === 'IDR' ? 'ID' : 'US';
-
       if (!currentCartId) {
-        shopifyCart = await createCart(currentCountry);
+        shopifyCart = await createCart(); // Removed countryCode to prevent market issues
         currentCartId = shopifyCart.id;
         localStorage.setItem(STORAGE_KEY, currentCartId!);
         // Add lines to the newly created cart

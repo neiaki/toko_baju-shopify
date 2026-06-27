@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Breadcrumb } from "@/components/shared/breadcrumb";
 import { getCollectionByHandle, getProductsForCollectionPaginated } from "@/lib/shopify/collections";
 import { ProductCard } from "@/components/shared/product-card";
 import { FilterSidebar } from "@/components/collection/filter-sidebar";
@@ -113,7 +114,10 @@ export default async function CollectionPage(props: {
     <div className="container mx-auto px-4 py-8 md:py-12">
       {/* Header */}
       <div className="mb-10 md:mb-16">
-        {/* Breadcrumb could go here */}
+        <Breadcrumb items={[
+          { label: 'Koleksi', href: '/collections/all' },
+          { label: title },
+        ]} />
         <h1 className="font-display text-4xl md:text-6xl uppercase tracking-wider mb-4">
           {title}
         </h1>

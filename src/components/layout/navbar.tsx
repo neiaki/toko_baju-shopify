@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, Search, User, ShoppingBag, X } from "lucide-react";
+import { Menu, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/lib/context/cart-context";
 import { useLanguage } from "@/lib/context/language-context";
@@ -20,9 +20,8 @@ import {
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const { cart, currency, setCurrency } = useCart();
+  const { currency, setCurrency } = useCart();
   const { locale, setLocale, t } = useLanguage();
-  const totalQuantity = cart.totalQuantity;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navLinks = [

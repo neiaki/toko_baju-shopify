@@ -205,6 +205,10 @@ export function CartDrawer() {
                   <span className="text-muted-foreground">Subtotal</span>
                   <span>{formatPrice(subtotal, cart.currencyCode || "IDR")}</span>
                 </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Estimasi Ongkir</span>
+                  <span className="text-muted-foreground text-xs italic">Dihitung saat checkout</span>
+                </div>
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-sm text-green-600">
                     <span>Diskon</span>

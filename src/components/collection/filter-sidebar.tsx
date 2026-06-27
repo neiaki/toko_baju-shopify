@@ -55,7 +55,6 @@ function FilterContent({ categories, sizes, colors }: FilterSidebarProps) {
   };
 
   // Debounce the price URL update to prevent spamming server transitions while sliding/typing
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const timer = setTimeout(() => {
       const currentMin = searchParams.get("minPrice") ? Number(searchParams.get("minPrice")) : 0;
@@ -69,6 +68,7 @@ function FilterContent({ categories, sizes, colors }: FilterSidebarProps) {
       }
     }, 400);
     return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [minPrice, maxPrice, maxAllowedPrice]);
 
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {

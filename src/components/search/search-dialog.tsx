@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search as SearchIcon, X } from "lucide-react";
+import { Search as SearchIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -21,7 +21,6 @@ export function SearchDialog() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Product[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
   const router = useRouter();
 
   const country = currency === "IDR" ? "ID" : "US";
@@ -29,14 +28,11 @@ export function SearchDialog() {
   useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
       if (query.length > 1) {
-        setIsSearching(true);
         try {
           const res = await searchProducts(query, country);
           setResults(res.slice(0, 4));
         } catch (error) {
           console.error("Search failed:", error);
-        } finally {
-          setIsSearching(false);
         }
       } else {
         setResults([]);
@@ -44,7 +40,7 @@ export function SearchDialog() {
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [query]);
+  }, [query, country]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

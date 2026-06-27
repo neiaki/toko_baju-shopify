@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Breadcrumb } from "@/components/shared/breadcrumb";
 import { getProductByHandle, getProductsByType } from "@/lib/shopify/products";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { ProductForm } from "@/components/product/product-form";
@@ -54,7 +55,11 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
-      {/* Breadcrumb could go here */}
+      <Breadcrumb items={[
+        { label: 'Koleksi', href: '/collections/all' },
+        ...(product.productType ? [{ label: product.productType, href: `/collections/${product.productType.toLowerCase()}` }] : []),
+        { label: product.title },
+      ]} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 mb-20">
         {/* Left: Image Gallery */}

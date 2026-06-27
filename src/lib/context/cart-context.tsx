@@ -19,7 +19,6 @@ import {
   addToCart,
   removeFromCart,
   updateCart,
-  updateCartBuyerIdentity,
   applyDiscountCodes,
 } from '@/lib/shopify/cart';
 
@@ -173,7 +172,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setCart(reshaped);
       return reshaped;
     },
-    [cart.cartId, currency]
+    [cart.cartId]
   );
 
   const removeItem = useCallback(

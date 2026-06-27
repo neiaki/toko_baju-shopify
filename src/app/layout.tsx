@@ -8,6 +8,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { AnnouncementBar } from "@/components/shared/announcement-bar";
 import { Analytics } from "@/components/layout/analytics";
+import { WhatsAppButton } from "@/components/shared/whatsapp-button";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,6 +26,13 @@ const bebasNeue = Bebas_Neue({
 export const metadata: Metadata = {
   title: "NEki Store | Premium Urban Streetwear",
   description: "Temukan koleksi streetwear urban terbaik dengan harga terjangkau. Dirancang untuk generasi muda yang berani tampil beda.",
+  openGraph: {
+    title: "NEki Store | Premium Urban Streetwear",
+    description: "Temukan koleksi streetwear urban terbaik dengan harga terjangkau. Dirancang untuk generasi muda yang berani tampil beda.",
+    siteName: "NEki Store",
+    locale: "id_ID",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -45,6 +53,7 @@ export default function RootLayout({
                 {children}
               </main>
               <Footer />
+              <WhatsAppButton />
             </WishlistProvider>
           </LanguageProvider>
         </CartProvider>

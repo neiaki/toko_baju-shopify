@@ -1,11 +1,39 @@
 import { notFound } from "next/navigation";
-import { getCollectionByHandle, getProductsForCollection } from "@/lib/shopify/collections";
-import { getProducts } from "@/lib/shopify/products";
+import { getCollectionByHandle, getProductsForCollectionPaginated } from "@/lib/shopify/collections";
 import { ProductCard } from "@/components/shared/product-card";
 import { FilterSidebar } from "@/components/collection/filter-sidebar";
 import { SortSelect } from "@/components/collection/sort-select";
+import { LoadMoreButton } from "@/components/collection/load-more-button";
 
 import { cookies } from "next/headers";
+import { Metadata } from "next";
+
+export async function generateMetadata(props: { params: Promise<{ handle: string }> }): Promise<Metadata> {
+  const params = await props.params;
+  const cookieStore = await cookies();
+  const country = cookieStore.get("x-country")?.value || "ID";
+  
+  if (params.handle === "all") {
+    return {
+      title: "Semua Koleksi | NEki Store",
+      description: "Lihat semua koleksi pakaian streetwear urban terbaik dari NEki Store.",
+    };
+  }
+
+  const collection = await getCollectionByHandle(params.handle, country);
+  if (!collection) return {};
+
+  const cleanDescription = collection.description?.replace(/<[^>]*>?/gm, '').substring(0, 160) || "Koleksi streetwear premium dari NEki Store.";
+
+  return {
+    title: `${collection.title} | NEki Store`,
+    description: cleanDescription,
+    openGraph: {
+      title: collection.title,
+      description: cleanDescription,
+    }
+  };
+}
 
 export default async function CollectionPage(props: { 
   params: Promise<{ handle: string }>;
@@ -31,9 +59,7 @@ export default async function CollectionPage(props: {
   const title = collection ? collection.title : "Semua Koleksi";
   const description = collection ? collection.description : "Lihat semua koleksi pakaian streetwear urban terbaik dari NEki Store.";
   
-  let displayProducts = params.handle === "all" 
-    ? await getProducts(undefined, country) 
-    : await getProductsForCollection(params.handle, country);
+  const { products: initialProducts, pageInfo } = await getProductsForCollectionPaginated(params.handle, country, 12);
 
   // Apply filters
   const minPrice = searchParams.minPrice ? Number(searchParams.minPrice) : 0;
@@ -42,7 +68,7 @@ export default async function CollectionPage(props: {
   const activeSizes = searchParams.size ? searchParams.size.split(",").map(s => s.toUpperCase()) : [];
   const activeColors = searchParams.color ? searchParams.color.split(",").map(c => c.toLowerCase()) : [];
 
-  displayProducts = displayProducts.filter((product) => {
+  const displayProducts = initialProducts.filter((product) => {
     // 1. Price Filter (check if any variant is within price range)
     const matchesPrice = product.variants.some((v) => v.price >= minPrice && v.price <= maxPrice);
 
@@ -109,24 +135,24 @@ export default async function CollectionPage(props: {
 
           {/* Grid */}
           {displayProducts.length > 0 ? (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
-              {displayProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+                {displayProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+
+              {/* Load More */}
+              <LoadMoreButton
+                handle={params.handle}
+                initialCursor={pageInfo.endCursor}
+                hasMore={pageInfo.hasNextPage}
+              />
+            </>
           ) : (
             <div className="py-20 text-center">
               <h3 className="text-xl font-medium mb-2">Tidak ada produk</h3>
               <p className="text-muted-foreground">Coba ubah filter Anda untuk menemukan apa yang Anda cari.</p>
-            </div>
-          )}
-
-          {/* Pagination Mock */}
-          {displayProducts.length > 12 && (
-            <div className="mt-16 flex justify-center">
-              <button className="border-2 border-brand-black dark:border-white px-8 py-3 text-sm font-bold uppercase tracking-widest hover:bg-brand-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">
-                Muat Lebih Banyak
-              </button>
             </div>
           )}
         </div>

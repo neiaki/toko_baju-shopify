@@ -7,6 +7,33 @@ import { ProductCard } from "@/components/shared/product-card";
 import { SectionHeader } from "@/components/shared/section-header";
 
 import { cookies } from "next/headers";
+import { Metadata } from "next";
+
+export async function generateMetadata(props: { params: Promise<{ handle: string }> }): Promise<Metadata> {
+  const params = await props.params;
+  const cookieStore = await cookies();
+  const country = cookieStore.get("x-country")?.value || "ID";
+  const product = await getProductByHandle(params.handle, country);
+
+  if (!product) return {};
+
+  const cleanDescription = product.descriptionHtml.replace(/<[^>]*>?/gm, '').substring(0, 160);
+
+  return {
+    title: `${product.title} | NEki Store`,
+    description: cleanDescription,
+    openGraph: {
+      title: product.title,
+      description: cleanDescription,
+      images: product.images.length > 0 ? [
+        {
+          url: product.images[0].src,
+          alt: product.images[0].alt || product.title,
+        }
+      ] : [],
+    },
+  };
+}
 
 export default async function ProductPage(props: { params: Promise<{ handle: string }> }) {
   const params = await props.params;

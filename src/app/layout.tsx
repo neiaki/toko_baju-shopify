@@ -3,9 +3,11 @@ import { Inter, Bebas_Neue } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/lib/context/cart-context";
 import { LanguageProvider } from "@/lib/context/language-context";
+import { WishlistProvider } from "@/lib/context/wishlist-context";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { AnnouncementBar } from "@/components/shared/announcement-bar";
+import { Analytics } from "@/components/layout/analytics";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -33,14 +35,17 @@ export default function RootLayout({
   return (
     <html lang="id" className={`${inter.variable} ${bebasNeue.variable} dark`} suppressHydrationWarning>
       <body className="font-body antialiased min-h-screen flex flex-col" suppressHydrationWarning>
+        <Analytics />
         <CartProvider>
           <LanguageProvider>
-            <AnnouncementBar />
-            <Navbar />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
+            <WishlistProvider>
+              <AnnouncementBar />
+              <Navbar />
+              <main className="flex-1">
+                {children}
+              </main>
+              <Footer />
+            </WishlistProvider>
           </LanguageProvider>
         </CartProvider>
       </body>

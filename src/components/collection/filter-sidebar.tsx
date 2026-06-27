@@ -27,18 +27,20 @@ function FilterContent({ categories, sizes, colors }: FilterSidebarProps) {
   const activeSizes = searchParams.get("size")?.split(",") || [];
   const activeColors = searchParams.get("color")?.split(",") || [];
 
-  // Local state for price inputs & slider
   const [minPrice, setMinPrice] = useState(minPriceParam ? Number(minPriceParam) : 0);
   const [maxPrice, setMaxPrice] = useState(maxPriceParam ? Number(maxPriceParam) : maxAllowedPrice);
 
-  // Sync local price state if URL changes externally
-  useEffect(() => {
+  const [prevMinParam, setPrevMinParam] = useState(minPriceParam);
+  if (minPriceParam !== prevMinParam) {
+    setPrevMinParam(minPriceParam);
     setMinPrice(minPriceParam ? Number(minPriceParam) : 0);
-  }, [minPriceParam]);
+  }
 
-  useEffect(() => {
+  const [prevMaxParam, setPrevMaxParam] = useState(maxPriceParam);
+  if (maxPriceParam !== prevMaxParam) {
+    setPrevMaxParam(maxPriceParam);
     setMaxPrice(maxPriceParam ? Number(maxPriceParam) : maxAllowedPrice);
-  }, [maxPriceParam, maxAllowedPrice]);
+  }
 
   const updateUrl = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -53,6 +55,7 @@ function FilterContent({ categories, sizes, colors }: FilterSidebarProps) {
   };
 
   // Debounce the price URL update to prevent spamming server transitions while sliding/typing
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const timer = setTimeout(() => {
       const currentMin = searchParams.get("minPrice") ? Number(searchParams.get("minPrice")) : 0;

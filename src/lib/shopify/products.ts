@@ -1,6 +1,14 @@
 import { shopifyFetch } from './client';
 import { Product } from '../types';
 
+export interface PaginatedProducts {
+  products: Product[];
+  pageInfo: {
+    hasNextPage: boolean;
+    endCursor: string | null;
+  };
+}
+
 const getProductQuery = `
   query getProduct($handle: String!, $country: CountryCode) @inContext(country: $country) {
     product(handle: $handle) {
@@ -159,4 +167,94 @@ export async function getProductsByType(type: string, country?: string): Promise
 
 export async function searchProducts(query: string, country?: string): Promise<Product[]> {
   return getProducts(`title:${query}*`, country);
+}
+
+// ===================== Paginated API =====================
+
+const getProductsPaginatedQuery = `
+  query getProductsPaginated($query: String, $first: Int = 12, $after: String, $country: CountryCode) @inContext(country: $country) {
+    products(first: $first, query: $query, after: $after) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          id
+          title
+          handle
+          descriptionHtml
+          productType
+          tags
+          images(first: 1) {
+            edges {
+              node {
+                id
+                url
+                altText
+              }
+            }
+          }
+          variants(first: 1) {
+            edges {
+              node {
+                availableForSale
+                price {
+                  amount
+                  currencyCode
+                }
+                compareAtPrice {
+                  amount
+                  currencyCode
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export async function getProductsPaginated(
+  query?: string,
+  country?: string,
+  first: number = 12,
+  after?: string
+): Promise<PaginatedProducts> {
+  const res = await shopifyFetch<any>({
+    query: getProductsPaginatedQuery,
+    variables: { query, first, after: after || null, country },
+  });
+
+  const data = res.body.data?.products;
+  const products = data?.edges
+    .map(({ node }: any) => reshapeProduct(node))
+    .filter((p: Product | undefined): p is Product => p !== undefined) || [];
+
+  return {
+    products,
+    pageInfo: {
+      hasNextPage: data?.pageInfo?.hasNextPage ?? false,
+      endCursor: data?.pageInfo?.endCursor ?? null,
+    },
+  };
+}
+
+export async function getProductsByTagPaginated(
+  tag: string,
+  country?: string,
+  first?: number,
+  after?: string
+): Promise<PaginatedProducts> {
+  return getProductsPaginated(`tag:${tag}`, country, first, after);
+}
+
+export async function getProductsByTypePaginated(
+  type: string,
+  country?: string,
+  first?: number,
+  after?: string
+): Promise<PaginatedProducts> {
+  return getProductsPaginated(`product_type:${type}`, country, first, after);
 }

@@ -1,6 +1,6 @@
 import { shopifyFetch } from './client';
 import { Collection, Product } from '../types';
-import { getProducts } from './products';
+import type { PaginatedProducts } from './products';
 
 const getCollectionQuery = `
   query getCollection($handle: String!, $country: CountryCode) @inContext(country: $country) {
@@ -136,4 +136,35 @@ export async function getProductsForCollection(handle: string, country?: string)
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   }));
+}
+
+export async function getProductsForCollectionPaginated(
+  handle: string,
+  country?: string,
+  first: number = 12,
+  after?: string
+): Promise<PaginatedProducts> {
+  const {
+    getProductsPaginated,
+    getProductsByTypePaginated,
+    getProductsByTagPaginated,
+  } = await import('./products');
+
+  if (handle === 'all') return getProductsPaginated(undefined, country, first, after);
+  if (handle === 'kaos') return getProductsByTypePaginated('Kaos', country, first, after);
+  if (handle === 'kemeja') return getProductsByTypePaginated('Kemeja', country, first, after);
+  if (handle === 'celana') return getProductsByTypePaginated('Celana', country, first, after);
+  if (handle === 'aksesoris') return getProductsByTypePaginated('Aksesoris', country, first, after);
+  if (handle === 'sale') return getProductsByTagPaginated('sale', country, first, after);
+  if (handle === 'new-arrivals') return getProductsByTagPaginated('new-arrival', country, first, after);
+
+  // For real Shopify collections, fall back to fetching all and returning without cursor
+  const products = await getProductsForCollection(handle, country);
+  return {
+    products,
+    pageInfo: {
+      hasNextPage: false,
+      endCursor: null,
+    },
+  };
 }

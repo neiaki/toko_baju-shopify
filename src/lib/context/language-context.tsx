@@ -49,6 +49,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const storedLocale = getCookie('x-locale') as Locale;
     if (storedLocale && (storedLocale === 'id' || storedLocale === 'en')) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLocaleState(storedLocale);
       setT(getTranslations(storedLocale));
     }

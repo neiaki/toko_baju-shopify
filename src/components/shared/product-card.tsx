@@ -3,9 +3,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Product } from "@/lib/types";
-import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { Heart } from "lucide-react";
+import { useWishlist } from "@/lib/context/wishlist-context";
 
 interface ProductCardProps {
   product: Product;
@@ -19,6 +20,21 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
   const currentPrice = product.variants[0]?.price || 0;
   const compareAtPrice = product.variants[0]?.compareAtPrice;
+
+  const { isInWishlist, toggleWishlist } = useWishlist();
+  const wishlisted = isInWishlist(product.handle);
+
+  const handleWishlistClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleWishlist({
+      handle: product.handle,
+      title: product.title,
+      image: product.images[0]?.src || "",
+      price: currentPrice,
+      currencyCode: product.variants[0]?.currencyCode || "IDR",
+    });
+  };
 
   return (
     <div className={cn("group flex flex-col", className)}>
@@ -41,6 +57,22 @@ export function ProductCard({ product, className }: ProductCardProps) {
             </span>
           )}
         </div>
+
+        {/* Wishlist Heart Button */}
+        <button
+          onClick={handleWishlistClick}
+          className="absolute top-2 right-2 z-10 p-1.5 bg-black/20 backdrop-blur-sm hover:bg-black/40 transition-colors rounded-full"
+          aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+        >
+          <Heart
+            className={cn(
+              "w-4 h-4 transition-colors",
+              wishlisted
+                ? "fill-red-500 text-red-500"
+                : "fill-transparent text-white"
+            )}
+          />
+        </button>
 
         {/* Images */}
         <div className="relative w-full h-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center">

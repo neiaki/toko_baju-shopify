@@ -91,7 +91,7 @@ function reshapeCart(shopifyCart: any): Cart {
 
 interface CartContextValue {
   cart: Cart;
-  addItem: (variantId: string, quantity: number) => Promise<void>;
+  addItem: (variantId: string, quantity: number) => Promise<Cart | undefined>;
   removeItem: (lineId: string) => Promise<void>;
   updateQuantity: (lineId: string, quantity: number) => Promise<void>;
   clearCart: () => void;
@@ -169,7 +169,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         shopifyCart = await addToCart(currentCartId, [{ merchandiseId: variantId, quantity }]);
       }
 
-      setCart(reshapeCart(shopifyCart));
+      const reshaped = reshapeCart(shopifyCart);
+      setCart(reshaped);
+      return reshaped;
     },
     [cart.cartId, currency]
   );

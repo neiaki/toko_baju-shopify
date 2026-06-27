@@ -1,6 +1,25 @@
 "use client";
 
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+
 export function SortSelect() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  const currentSort = searchParams.get("sort") || "featured";
+
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    const params = new URLSearchParams(searchParams.toString());
+    if (val === "featured") {
+      params.delete("sort");
+    } else {
+      params.set("sort", val);
+    }
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
   return (
     <div className="flex items-center gap-3">
       <span className="text-sm font-medium uppercase tracking-wider text-muted-foreground hidden sm:inline-block">
@@ -8,8 +27,9 @@ export function SortSelect() {
       </span>
       <div className="relative">
         <select 
-          className="appearance-none bg-transparent border border-border py-2 pl-4 pr-10 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer"
-          defaultValue="featured"
+          className="appearance-none bg-transparent border border-border py-2 pl-4 pr-10 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer rounded-none dark:bg-brand-black"
+          value={currentSort}
+          onChange={handleSortChange}
         >
           <option value="featured">Rekomendasi</option>
           <option value="newest">Terbaru</option>
@@ -25,3 +45,4 @@ export function SortSelect() {
     </div>
   );
 }
+

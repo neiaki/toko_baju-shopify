@@ -43,6 +43,7 @@ export default async function CollectionPage(props: {
     category?: string; 
     size?: string; 
     color?: string; 
+    sort?: string;
   }>;
 }) {
   const params = await props.params;
@@ -97,6 +98,16 @@ export default async function CollectionPage(props: {
 
     return matchesPrice && matchesCategory && matchesSize && matchesColor;
   });
+
+  // Apply sorting (in-place)
+  const sort = searchParams.sort || "featured";
+  if (sort === "newest") {
+    displayProducts.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+  } else if (sort === "price-asc") {
+    displayProducts.sort((a, b) => (a.variants[0]?.price || 0) - (b.variants[0]?.price || 0));
+  } else if (sort === "price-desc") {
+    displayProducts.sort((a, b) => (b.variants[0]?.price || 0) - (a.variants[0]?.price || 0));
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
